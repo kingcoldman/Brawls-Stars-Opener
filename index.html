@@ -310,15 +310,15 @@
         <div class="shop-grid">
             <div class="shop-card" style="background: linear-gradient(180deg, #fff5cc, #cca300);" onclick="openStarrDrop('Angelic')">
                 <h3 style="color: #4d3d00;">Angelic Drop</h3>
-                <p>Chance for celestial skins & high power drops</p>
+                <p>Single reward roll: Celestial Skins or heavy Power Points</p>
             </div>
             <div class="shop-card" style="background: linear-gradient(180deg, #4d0000, #1a0000);" onclick="openStarrDrop('Demonic')">
                 <h3 style="color: #ff3333;">Demonic Drop</h3>
-                <p>Chance for underworld cosmetics & massive coins</p>
+                <p>Single reward roll: Underworld Cosmetics or massive Gold Cache</p>
             </div>
             <div class="shop-card" style="background: linear-gradient(180deg, #3d0066, #140024);" onclick="openStarrDrop('Chaos')">
                 <h3 style="color: #cc33ff;">Chaos Drop</h3>
-                <p>Completely unpredictable random prize modifiers</p>
+                <p>Single reward roll: Totally random variable prize type</p>
             </div>
         </div>
     </div>
@@ -350,26 +350,20 @@
     };
 
     function generateAllBrawlers() {
-        // Starting/Trophy Road
         brawlers.push({ name: "Shelly", unlocked: true, level: 1, rarity: "Rare" });
 
-        // Rare
         let rares = ["Barley", "Brock", "Bull", "Colt", "El Primo", "Nita", "Poco", "Rosa"];
         rares.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Rare" }));
 
-        // Super Rare
         let superRares = ["8-Bit", "Carl", "Darryl", "Dynamike", "Gus", "Jacky", "Jessie", "Penny", "Rico", "Tick"];
         superRares.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Super Rare" }));
 
-        // Epic
         let epics = ["Ash", "Bea", "Belle", "Bibi", "Bo", "Bonnie", "Colette", "Edgar", "Emz", "Gale", "Griff", "Grom", "Hank", "Lola", "Mandy", "Maisie", "Nani", "Pam", "Pearl", "Piper", "Sam", "Stu"];
         epics.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Epic" }));
 
-        // Mythic
         let mythics = ["Angelo", "Berry", "Buzz", "Byron", "Chuck", "Doug", "Eve", "Fang", "Gene", "Gray", "Janet", "Lily", "Lou", "Max", "Melodie", "Mortis", "Mr. P", "Otis", "R-T", "Ruffs", "Squeak", "Sprouts", "Tara", "Willow"];
         mythics.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Mythic" }));
 
-        // Legendary
         let legendaries = ["Amber", "Charlie", "Chester", "Crow", "Draco", "Kenji", "Kit", "Leon", "Meg", "Sandy", "Spike", "Surge"];
         legendaries.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Legendary" }));
         
@@ -444,42 +438,127 @@
 
     function processFinalStarrDropLoot() {
         let content = '';
+        let rand = Math.random();
         
         if (animationState.dropType === 'Standard') {
             let finalTier = rarities[animationState.currentTierIndex];
             let color = `var(--${finalTier.toLowerCase().replace(' ', '')}-color)`;
             let multiplier = animationState.currentTierIndex + 1;
-            let coins = 60 * multiplier;
-            let pp = 25 * multiplier;
 
-            resources.coins += coins;
-            resources.powerPoints += pp;
+            content = `<div style="color:${color}; font-size: 2.6rem;">⚡ ${finalTier} Starr Drop ⚡</div><div style="font-size: 2.2rem; margin-top:20px;">`;
 
-            content = `<div style="color:${color}; font-size: 3rem;">⚡ ${finalTier} Starr Drop ⚡</div>`;
-            content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 ${coins}<br>+⚡ ${pp}</div>`;
-
-            // Rarity targeted pool extraction
-            if (Math.random() < 0.40) {
-                let locked = brawlers.filter(b => !b.unlocked && b.rarity === finalTier);
-                if (locked.length === 0) locked = brawlers.filter(b => !b.unlocked); // Fallback to any locked
-                
-                if (locked.length > 0) {
-                    let picked = locked[Math.floor(Math.random() * locked.length)];
-                    picked.unlocked = true;
-                    content += `<br><div style="color:var(--bs-yellow)">✨ NEW BRAWLER: ${picked.name}! ✨</div>`;
+            // Decoupled Singular Reward Distribution System
+            if (finalTier === "Rare") {
+                if (rand < 0.65) {
+                    let coins = 50; resources.coins += coins;
+                    content += `🪙 ${coins} Coins`;
+                } else {
+                    let pp = 20; resources.powerPoints += pp;
+                    content += `⚡ ${pp} Power Points`;
+                }
+            } 
+            else if (finalTier === "Super Rare") {
+                if (rand < 0.50) {
+                    let coins = 150; resources.coins += coins;
+                    content += `🪙 ${150} Coins`;
+                } else if (rand < 0.95) {
+                    let pp = 75; resources.powerPoints += pp;
+                    content += `⚡ ${pp} Power Points`;
+                } else {
+                    content += `🎭 Spray Cosmetic unlocked!`;
+                }
+            } 
+            else if (finalTier === "Epic") {
+                if (rand < 0.40) {
+                    let coins = 500; resources.coins += coins;
+                    content += `🪙 ${coins} Coins`;
+                } else if (rand < 0.75) {
+                    let pp = 200; resources.powerPoints += pp;
+                    content += `⚡ ${pp} Power Points`;
+                } else if (rand < 0.95) {
+                    content += `🎭 Pin Profile Emote unlocked!`;
+                } else {
+                    // Pull Epic Pool Brawler
+                    let locked = brawlers.filter(b => !b.unlocked && b.rarity === "Epic");
+                    if (locked.length === 0) locked = brawlers.filter(b => !b.unlocked);
+                    if (locked.length > 0) {
+                        let picked = locked[Math.floor(Math.random() * locked.length)];
+                        picked.unlocked = true;
+                        content += `✨ NEW BRAWLER: ${picked.name}! ✨`;
+                    } else {
+                        resources.coins += 1000; content += `🪙 1000 Coins (Alternative Profile Credit Value)`;
+                    }
+                }
+            } 
+            else if (finalTier === "Mythic") {
+                if (rand < 0.30) {
+                    let coins = 1000; resources.coins += coins;
+                    content += `🪙 ${coins} Coins`;
+                } else if (rand < 0.60) {
+                    let pp = 500; resources.powerPoints += pp;
+                    content += `⚡ ${pp} Power Points`;
+                } else if (rand < 0.85) {
+                    content += `🎭 Unlocked Profile Icon Accessory!`;
+                } else {
+                    let locked = brawlers.filter(b => !b.unlocked && b.rarity === "Mythic");
+                    if (locked.length === 0) locked = brawlers.filter(b => !b.unlocked);
+                    if (locked.length > 0) {
+                        let picked = locked[Math.floor(Math.random() * locked.length)];
+                        picked.unlocked = true;
+                        content += `✨ NEW MYTHIC BRAWLER: ${picked.name}! ✨`;
+                    } else {
+                        resources.coins += 2000; content += `🪙 2000 Coins`;
+                    }
+                }
+            } 
+            else if (finalTier === "Legendary") {
+                if (rand < 0.30) {
+                    content += `🎭 Rare/Super Rare Custom Skin Variant Unlocked!`;
+                } else if (rand < 0.60) {
+                    content += `💥 Special Hypercharge Ability Unlocked!`;
+                } else {
+                    let locked = brawlers.filter(b => !b.unlocked && b.rarity === "Legendary");
+                    if (locked.length === 0) locked = brawlers.filter(b => !b.unlocked);
+                    if (locked.length > 0) {
+                        let picked = locked[Math.floor(Math.random() * locked.length)];
+                        picked.unlocked = true;
+                        content += `✨ NEW LEGENDARY BRAWLER: ${picked.name}! ✨`;
+                    } else {
+                        content += `🎭 Epic Hypercharge Skin Unlock Upgrade!`;
+                    }
                 }
             }
-        } else {
+            content += "</div>";
+        } 
+        else {
+            // Event Specific Decoupled Singular Drop Logic
             if (animationState.dropType === 'Angelic') {
-                resources.powerPoints += 450;
-                content = `<div style="color:var(--angelic-color); font-size: 2.6rem;">🪽 Angelic Drop Reward 🪽</div>+⚡ 450 Power Points`;
-            } else if (animationState.dropType === 'Demonic') {
-                resources.coins += 1200;
-                content = `<div style="color:var(--demonic-color); font-size: 2.6rem;">😈 Demonic Drop Reward 😈</div>+🪙 1200 Coins`;
-            } else {
-                resources.coins += 400; resources.powerPoints += 200;
-                content = `<div style="color:var(--chaos-color); font-size: 2.6rem;">🌀 Chaos Drop Reward 🌀</div>+🪙 400 Coins <br> +⚡ 200 Power Points`;
+                content = `<div style="color:var(--angelic-color); font-size: 2.6rem;">🪽 Angelic Drop Roll 🪽</div><div style="font-size: 1.8rem; margin-top:20px;">`;
+                if (rand < 0.60) {
+                    resources.powerPoints += 500; content += `⚡ 500 Power Points`;
+                } else {
+                    content += `✨ Celestial Holy Cosmetic Skin Unique Asset!`;
+                }
+            } 
+            else if (animationState.dropType === 'Demonic') {
+                content = `<div style="color:var(--demonic-color); font-size: 2.6rem;">😈 Demonic Drop Roll 😈</div><div style="font-size: 1.8rem; margin-top:20px;">`;
+                if (rand < 0.60) {
+                    resources.coins += 1500; content += `🪙 1500 Gold Coins`;
+                } else {
+                    content += `🔥 Dark Underworld Variant Character Skin Asset!`;
+                }
+            } 
+            else {
+                content = `<div style="color:var(--chaos-color); font-size: 2.6rem;">🌀 Chaos Anomaly Drop 🌀</div><div style="font-size: 1.8rem; margin-top:20px;">`;
+                if (rand < 0.33) {
+                    resources.coins += 800; content += `🪙 800 Coins`;
+                } else if (rand < 0.66) {
+                    resources.powerPoints += 400; content += `⚡ 400 Power Points`;
+                } else {
+                    content += `🎭 Unpredictable Profile Animation Card!`;
+                }
             }
+            content += "</div>";
         }
 
         animationState.finalRewardHTML = content;
