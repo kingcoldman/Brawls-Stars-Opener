@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brawl Stars Box Simulator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1b2735 0%, #090a0f 100%);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 { color: #ffcc00; text-shadow: 2px 2px #000; }
+        .container { max-width: 800px; margin: auto; }
+        .resources {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .buttons-section {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        button {
+            background: #ffcc00;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        button:hover { transform: scale(1.05); background: #ffee55; }
+        button:active { transform: scale(0.95); }
+        .drop-display {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed #ffcc00;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 100px;
+            margin-bottom: 30px;
+            font-size: 1.3rem;
+        }
+        .brawlers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .brawler-card {
+            background: #2a2d32;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            opacity: 0.5;
+        }
+        .brawler-card.unlocked {
+            opacity: 1;
+            border-color: #00ffcc;
+            background: #1a3c40;
+        }
+        .upgrade-btn {
+            background: #00ffcc;
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Brawl Stars Simulator</h1>
+    
+    <div class="resources">
+        <div>Coins: <span id="coins">0</span> 🪙</div>
+        <div>Power Points: <span id="powerPoints">0</span> ⚡</div>
+        <div>Brawlers Unlocked: <span id="unlockedCount">0</span>/107</div>
+    </div>
+
+    <div class="buttons-section">
+        <button onclick="openBox('Brawl Box')">Open Brawl Box</button>
+        <button onclick="openBox('Starr Drop')">Open Starr Drop</button>
+    </div>
+
+    <h2>Rewards</h2>
+    <div class="drop-display" id="dropDisplay">
+        Click a button above to open a box or starr drop!
+    </div>
+
+    <h2>Your Brawlers</h2>
+    <div class="brawlers-grid" id="brawlersGrid"></div>
+</div>
+
+<script>
+    // Game State
+    let resources = { coins: 1000, powerPoints: 200 };
+    
+    // Sample list of Brawlers (Expand this array up to 107!)
+    let brawlers = [
+        { id: "shelly", name: "Shelly", unlocked: true, level: 1, rarity: "Starting" },
+        { id: "colt", name: "Colt", unlocked: false, level: 1, rarity: "Rare" },
+        { id: "el_primo", name: "El Primo", unlocked: false, level: 1, rarity: "Rare" },
+        { id: "poco", name: "Poco", unlocked: false, level: 1, rarity: "Rare" },
+        { id: "spike", name: "Spike", unlocked: false, level: 1, rarity: "Legendary" },
+        { id: "crow", name: "Crow", unlocked: false, level: 1, rarity: "Legendary" },
+        { id: "leon", name: "Leon", unlocked: false, level: 1, rarity: "Legendary" }
+    ];
+
+    // Available skins for simulation
+    const skins = ["Starly Shelly", "Outlaw Colt", "El Rudo Primo", "Mecha Crow", "Shark Leon"];
+
+    // Update UI Elements
+    function updateUI() {
+        document.getElementById('coins').innerText = resources.coins;
+        document.getElementById('powerPoints').innerText = resources.powerPoints;
+        
+        let unlocked = brawlers.filter(b => b.unlocked).length;
+        document.getElementById('unlockedCount').innerText = unlocked;
+
+        const grid = document.getElementById('brawlersGrid');
+        grid.innerHTML = '';
+
+        brawlers.forEach(b => {
+            let card = document.createElement('div');
+            card.className = `brawler-card ${b.unlocked ? 'unlocked' : ''}`;
+            
+            card.innerHTML = `
+                <h3>${b.name}</h3>
+                <p>Rarity: ${b.rarity}</p>
+                <p>Level: ${b.unlocked ? b.level : 'Locked'}</p>
+            `;
+
+            if (b.unlocked && b.level < 11) {
+                let cost = b.level * 100; // Formula for upgrading cost
+                card.innerHTML += `<button class="upgrade-btn" onclick="upgradeBrawler('${b.id}', ${cost})">Upgrade (${cost} 🪙)</button>`;
+            } else if (b.level >= 11) {
+                card.innerHTML += `<p style="color: #ffcc00; font-weight: bold;">MAX LEVEL</p>`;
+            }
+
+            grid.appendChild(card);
+        });
+    }
+
+    // Open Box Logic
+    function openBox(type) {
+        let display = document.getElementById('dropDisplay');
+        let coinGain = Math.floor(Math.random() * 150) + 50;
+        let ppGain = Math.floor(Math.random() * 80) + 20;
+        
+        resources.coins += coinGain;
+        resources.powerPoints += ppGain;
+
+        let rewardText = `Opened a <strong>${type}</strong>!<br>+${coinGain} Coins 🪙<br>+${ppGain} Power Points ⚡`;
+
+        // Luck system (e.g., 25% chance to drop a Brawler or Skin)
+        let luck = Math.random();
+        if (luck < 0.20) {
+            // Find currently locked brawlers
+            let lockedBrawlers = brawlers.filter(b => !b.unlocked);
+            if (lockedBrawlers.length > 0) {
+                let randomBrawler = lockedBrawlers[Math.floor(Math.random() * lockedBrawlers.length)];
+                randomBrawler.unlocked = true;
+                rewardText += `<br><span style="color: #ffcc00; font-weight: bold;">🎉 UNLOCKED NEW BRAWLER: ${randomBrawler.name}! 🎉</span>`;
+            }
+        } else if (luck >= 0.20 && luck < 0.30) {
+            // Drop a random skin
+            let randomSkin = skins[Math.floor(Math.random() * skins.length)];
+            rewardText += `<br><span style="color: #00ffcc; font-weight: bold;">🎭 NEW SKIN: ${randomSkin}! 🎭</span>`;
+        }
+
+        display.innerHTML = rewardText;
+        updateUI();
+    }
+
+    // Upgrade Brawler Logic
+    function upgradeBrawler(id, cost) {
+        let brawler = brawlers.find(b => b.id === id);
+        if (resources.coins >= cost) {
+            resources.coins -= cost;
+            brawler.level += 1;
+            updateUI();
+        } else {
+            alert("Not enough coins!");
+        }
+    }
+
+    // Initialize Game on load
+    updateUI();
+</script>
+
+</body>
+</html>
