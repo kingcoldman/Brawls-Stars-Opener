@@ -1,14 +1,9 @@
-Here is the complete, unified code for your index.html file. It combines the structured layout, all 107 brawlers generated programmatically by rarity, the 4 Box types, the Starr Drop system, and the interactive CSS shaking and upgrading animations.
-
-You can copy this entire block and paste it straight into your repository file:
-
-HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brawl Stars Simulator Pro</title>
+    <title>Brawl Stars Trophy Box Simulator</title>
     <style>
         :root {
             --bs-blue: #0044ff;
@@ -180,13 +175,21 @@ HTML
             flex-direction: column;
         }
 
-        /* The Box/Starr Drop Tap Target */
+        /* Animated Asset Container */
         .tap-target {
-            font-size: 7rem;
             cursor: pointer;
             margin-bottom: 20px;
             transition: transform 0.1s;
-            position: relative;
+        }
+
+        .tap-target img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+        }
+
+        .box-emoji {
+            font-size: 7rem;
         }
 
         /* Shaking animation when tapped */
@@ -194,12 +197,12 @@ HTML
             animation: shake 0.2s ease-in-out infinite;
         }
 
-        /* Upgrade Flash Animations */
-        .flash-rare { animation: flashGlow 0.3s ease-out; background: var(--rare-color) !important; border-radius: 50%; }
-        .flash-super-rare { animation: flashGlow 0.3s ease-out; background: var(--super-rare-color) !important; border-radius: 50%; }
-        .flash-epic { animation: flashGlow 0.3s ease-out; background: var(--epic-color) !important; border-radius: 50%; }
-        .flash-mythic { animation: flashGlow 0.3s ease-out; background: var(--mythic-color) !important; border-radius: 50%; }
-        .flash-legendary { animation: flashGlow 0.3s ease-out; background: var(--legendary-color) !important; border-radius: 50%; }
+        /* Upgrade Flash Animations for Starr Drops */
+        .flash-rare { animation: flashGlow 0.3s ease-out; }
+        .flash-super-rare { animation: flashGlow 0.3s ease-out; }
+        .flash-epic { animation: flashGlow 0.3s ease-out; }
+        .flash-mythic { animation: flashGlow 0.3s ease-out; }
+        .flash-legendary { animation: flashGlow 0.3s ease-out; }
 
         /* Reward Pop Up */
         .reward-box {
@@ -222,7 +225,7 @@ HTML
 
         @keyframes flashGlow {
             0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.3); filter: brightness(2); box-shadow: 0 0 50px #fff; }
+            50% { transform: scale(1.3); filter: brightness(1.8) drop-shadow(0 0 30px #fff); }
             100% { transform: scale(1); filter: brightness(1); }
         }
 
@@ -248,8 +251,8 @@ HTML
 <body>
 
     <div class="top-bar">
-        <div class="resource-item" style="color: var(--bs-yellow);">🪙 <span id="coins">2000</span></div>
-        <div class="resource-item" style="color: #ff66cc;">⚡ <span id="powerPoints">500</span></div>
+        <div class="resource-item" style="color: var(--bs-yellow);">🪙 <span id="coins">5000</span></div>
+        <div class="resource-item" style="color: #ff66cc;">⚡ <span id="powerPoints">1000</span></div>
         <div class="resource-item" style="color: #00ccff;">🏆 <span id="unlockedCount">1</span>/107</div>
     </div>
 
@@ -259,23 +262,27 @@ HTML
     </div>
 
     <div id="shop" class="view-panel active">
-        <h2>Brawl Boxes</h2>
+        <h2>Trophy Boxes</h2>
         <div class="shop-grid">
-            <div class="shop-card" onclick="openBox('Brawl Box')">
-                <h3 style="color: #00ccff;">Brawl Box</h3>
-                <p>Standard rewards</p>
+            <div class="shop-card" onclick="openBox('Small Trophy Box')">
+                <h3 style="color: #00ccff;">Small Trophy Box</h3>
+                <p>Contains 4 item drops</p>
             </div>
-            <div class="shop-card" onclick="openBox('Big Box')">
-                <h3 style="color: #ff3399;">Big Box</h3>
-                <p>3x more rewards!</p>
+            <div class="shop-card" onclick="openBox('Big Trophy Box')">
+                <h3 style="color: #ff3399;">Big Trophy Box</h3>
+                <p>Contains 8 item drops</p>
             </div>
-            <div class="shop-card" onclick="openBox('Mega Box')">
-                <h3 style="color: var(--bs-yellow);">Mega Box</h3>
-                <p>10x more rewards!</p>
+            <div class="shop-card" onclick="openBox('Mega Trophy Box')">
+                <h3 style="color: var(--bs-yellow);">Mega Trophy Box</h3>
+                <p>Contains 12 item drops</p>
             </div>
-            <div class="shop-card" onclick="openBox('Omega Box')">
-                <h3 style="color: #ff3333;">Omega Box</h3>
-                <p>Ultimate absolute value!</p>
+            <div class="shop-card" onclick="openBox('Omega Trophy Box')">
+                <h3 style="color: #ff3333;">Omega Trophy Box</h3>
+                <p>Contains 16 items & guaranteed cosmetics</p>
+            </div>
+            <div class="shop-card" style="background: linear-gradient(180deg, #ff33cc 0%, #3d1b63 100%);" onclick="openBox('Ultra Trophy Box')">
+                <h3 style="color: #fff; text-shadow: 0 0 10px #ff33cc;">Ultra Trophy Box</h3>
+                <p>Contains 20 items & Hypercharge Skin Chance!</p>
             </div>
         </div>
 
@@ -283,7 +290,7 @@ HTML
         <div class="shop-grid">
             <div class="shop-card" style="background: linear-gradient(180deg, #1f1235 0%, #4c1c5c 100%);" onclick="openStarrDrop()">
                 <h3 style="color: #fff;">Tap to Roll Starr Drop</h3>
-                <p>Rare up to Legendary!</p>
+                <p>Authentic Upgrading Images!</p>
             </div>
         </div>
     </div>
@@ -294,22 +301,29 @@ HTML
     </div>
 
     <div class="overlay" id="rewardOverlay">
-        <div class="tap-target" id="animatedObject" onclick="handleTap()">📦</div>
+        <div class="tap-target" id="animatedObject" onclick="handleTap()"></div>
         <div class="reward-box" id="rewardContent" onclick="closeOverlay()"></div>
         <p id="tapPrompt" style="color: #ffcc00; font-size: 1.2rem; margin-top: 30px;">TAP TO OPEN!</p>
     </div>
 
 <script>
     // Game State
-    let resources = { coins: 2000, powerPoints: 500 };
+    let resources = { coins: 5000, powerPoints: 1000 };
     let brawlers = [];
 
-    // Configuration for dynamic generation of all 107 slots
+    // Official Starr Drop Wiki Asset Links
+    const dropImages = {
+        "Rare": "https://static.wikia.nocookie.net/brawlstars/images/e/e6/Starr_Drop_Rare.png",
+        "Super-Rare": "https://static.wikia.nocookie.net/brawlstars/images/0/00/Starr_Drop_Super_Rare.png",
+        "Epic": "https://static.wikia.nocookie.net/brawlstars/images/9/9b/Starr_Drop_Epic.png",
+        "Mythic": "https://static.wikia.nocookie.net/brawlstars/images/0/01/Starr_Drop_Mythic.png",
+        "Legendary": "https://static.wikia.nocookie.net/brawlstars/images/d/d3/Starr_Drop_Legendary.png"
+    };
+
     const rarities = ["Rare", "Super-Rare", "Epic", "Mythic", "Legendary"];
     
-    // Animation tracking state
     let animationState = {
-        currentType: '', // 'box' or 'drop'
+        currentType: '', 
         tapCount: 0,
         maxTaps: 3,
         finalRewardHTML: '',
@@ -317,94 +331,95 @@ HTML
         currentDropTier: 0
     };
 
-    // Generate 107 standardized Brawlers dynamically
     function generateAllBrawlers() {
-        // Starting Brawler
         brawlers.push({ id: "shelly", name: "Shelly", unlocked: true, level: 1, rarity: "Rare" });
-        
-        let namesPool = [
-            "Colt", "Brock", "El Primo", "Poco", "Barley", "Rosa", "Bull", "Jessie", "Dynamike", "Tick", 
-            "8-Bit", "Rico", "Darryl", "Penny", "Carl", "Jacky", "Gus", "Piper", "Pam", "Frank", 
-            "Bibi", "Bea", "Nani", "Edgar", "Griff", "Grom", "Bonnie", "Gale", "Colette", "Lou", 
-            "Kit", "Melodie", "Angelo", "Draco", "Lily", "Clancy", "Moe", "Kenji", "Juju", "Chaxie"
-        ];
+        let namesPool = ["Colt", "Brock", "El Primo", "Poco", "Barley", "Rosa", "Bull", "Jessie", "Dynamike", "Tick", "8-Bit", "Rico", "Darryl", "Penny", "Carl", "Jacky", "Gus", "Piper", "Pam", "Frank", "Bibi", "Bea", "Nani", "Edgar", "Griff", "Grom", "Bonnie", "Gale", "Colette", "Lou", "Kit", "Melodie", "Angelo", "Draco", "Lily", "Clancy", "Moe", "Kenji", "Juju", "Chaxie"];
 
         for (let i = 2; i <= 107; i++) {
             let baseName = namesPool[(i - 2) % namesPool.length];
-            let uniqueName = `${baseName} V${Math.ceil(i / namesPool.length)}`;
-            let randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
-            
             brawlers.push({
                 id: `brawler_${i}`,
-                name: uniqueName,
+                name: `${baseName} V${Math.ceil(i / namesPool.length)}`,
                 unlocked: false,
                 level: 1,
-                rarity: randomRarity
+                rarity: rarities[Math.floor(Math.random() * rarities.length)]
             });
         }
     }
 
-    // Tab switcher
     function switchTab(tabId) {
         document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        
         document.getElementById(tabId).classList.add('active');
         event.currentTarget.classList.add('active');
     }
 
-    // Prepare Box Opener
+    // New Trophy Box Opening Math based on your criteria
     function openBox(boxType) {
         animationState.currentType = 'box';
         animationState.tapCount = 0;
-        animationState.maxTaps = boxType === 'Brawl Box' ? 2 : boxType === 'Big Box' ? 3 : 5;
+        
+        let totalDrops = 4;
+        if (boxType === 'Big Trophy Box') totalDrops = 8;
+        if (boxType === 'Mega Trophy Box') totalDrops = 12;
+        if (boxType === 'Omega Trophy Box') totalDrops = 16;
+        if (boxType === 'Ultra Trophy Box') totalDrops = 20;
+
+        animationState.maxTaps = Math.min(5, Math.ceil(totalDrops / 3));
         
         let obj = document.getElementById('animatedObject');
-        obj.innerText = '📦';
+        obj.innerHTML = '<span class="box-emoji">📦</span>';
         obj.style.display = 'block';
         document.getElementById('rewardContent').style.display = 'none';
-        document.getElementById('tapPrompt').innerText = 'TAP TO CRACK BOX!';
+        document.getElementById('tapPrompt').innerText = `TAP TO CRACK ${boxType.toUpperCase()}!`;
         document.getElementById('rewardOverlay').style.display = 'flex';
 
-        // Pre-calculate items inside
-        let multiplier = boxType === 'Big Box' ? 3 : boxType === 'Mega Box' ? 10 : boxType === 'Omega Box' ? 20 : 1;
-        let coinGain = (Math.floor(Math.random() * 50) + 30) * multiplier;
-        let ppGain = (Math.floor(Math.random() * 20) + 10) * multiplier;
+        let coinGain = totalDrops * (Math.floor(Math.random() * 15) + 10);
+        let ppGain = totalDrops * (Math.floor(Math.random() * 8) + 4);
         resources.coins += coinGain;
         resources.powerPoints += ppGain;
 
-        let content = `<div style="color:var(--bs-yellow)">${boxType} Opened!</div>`;
-        content += `<div style="font-size: 1.8rem; margin: 15px 0;">+🪙 ${coinGain}<br>+⚡ ${ppGain}</div>`;
+        let content = `<div style="color:var(--bs-yellow); font-size:2.8rem;">${boxType}</div>`;
+        content += `<div style="font-size: 1.8rem; margin: 15px 0;">Drops processed: ${totalDrops}<br>+🪙 ${coinGain}<br>+⚡ ${ppGain}</div>`;
 
-        if (Math.random() < (0.05 * multiplier)) {
+        if (boxType === 'Omega Trophy Box') {
+            content += `<div style="color:#ff3399; font-size: 1.6rem;">🎭 Guaranteed Epic Skin Cosmetic Added!</div>`;
+        }
+
+        if (boxType === 'Ultra Trophy Box' && Math.random() < 0.25) {
+            content += `<div style="color:#ff33cc; font-size: 1.8rem; text-shadow: 0 0 10px #ff33cc;">⚡ PULLED ULTRA EXCLUSIVE HYPERCHARGE SKIN! ⚡</div>`;
+        }
+
+        // Brawler pull calculation
+        if (Math.random() < (0.01 * totalDrops)) {
             let locked = brawlers.filter(b => !b.unlocked);
             if (locked.length > 0) {
                 let picked = locked[Math.floor(Math.random() * locked.length)];
                 picked.unlocked = true;
-                content += `<div style="color:var(--legendary-color); font-size: 2rem; animation: burstPop 0.5s ease-out;">🎉 UNLOCKED: ${picked.name}! 🎉</div>`;
+                content += `<div style="color:var(--legendary-color); font-size: 2rem; margin-top:10px;">🎉 UNLOCKED BRAWLER: ${picked.name}!</div>`;
             }
         }
         animationState.finalRewardHTML = content;
     }
 
-    // Prepare Starr Drop Opener
     function openStarrDrop() {
         animationState.currentType = 'drop';
         animationState.currentDropTier = 0; 
-        animationState.maxTaps = Math.floor(Math.random() * 4) + 1; // Random reward depth
+        animationState.maxTaps = Math.floor(Math.random() * 4) + 1; 
         
         let obj = document.getElementById('animatedObject');
-        obj.innerText = '⭐';
+        // Start on baseline Rare tier image asset
+        obj.innerHTML = `<img src="${dropImages['Rare']}" alt="Starr Drop">`;
         obj.style.display = 'block';
         obj.className = "tap-target"; 
         document.getElementById('rewardContent').style.display = 'none';
-        document.getElementById('tapPrompt').innerText = 'TAP TO UPGRADE STARR DROP!';
+        document.getElementById('tapPrompt').innerText = 'TAP TO UPGRADE!';
         document.getElementById('rewardOverlay').style.display = 'flex';
 
         let finalTier = animationState.dropRarities[Math.min(animationState.maxTaps, 4)];
         let color = `var(--${finalTier.toLowerCase()}-color)`;
-        let coins = 50 * (animationState.maxTaps + 1);
-        let pp = 20 * (animationState.maxTaps + 1);
+        let coins = 60 * (animationState.maxTaps + 1);
+        let pp = 25 * (animationState.maxTaps + 1);
 
         resources.coins += coins;
         resources.powerPoints += pp;
@@ -412,7 +427,7 @@ HTML
         let content = `<div style="color:${color}; font-size: 3rem;">⚡ ${finalTier} Starr Drop ⚡</div>`;
         content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 ${coins}<br>+⚡ ${pp}</div>`;
 
-        if (finalTier === "Legendary" || (finalTier === "Mythic" && Math.random() < 0.5)) {
+        if (finalTier === "Legendary" || (finalTier === "Mythic" && Math.random() < 0.4)) {
             let locked = brawlers.filter(b => !b.unlocked);
             if (locked.length > 0) {
                 let picked = locked[Math.floor(Math.random() * locked.length)];
@@ -423,11 +438,8 @@ HTML
         animationState.finalRewardHTML = content;
     }
 
-    // Handle dynamic clicks on items
     function handleTap() {
         let obj = document.getElementById('animatedObject');
-        
-        // Active visual bump animation
         obj.classList.add('shake-anim');
         setTimeout(() => obj.classList.remove('shake-anim'), 200);
 
@@ -436,7 +448,7 @@ HTML
             if (animationState.tapCount >= animationState.maxTaps) {
                 revealRewards();
             } else {
-                document.getElementById('tapPrompt').innerText = `${animationState.maxTaps - animationState.tapCount} Taps remaining...`;
+                document.getElementById('tapPrompt').innerText = `${animationState.maxTaps - animationState.tapCount} Taps left...`;
             }
         } 
         else if (animationState.currentType === 'drop') {
@@ -444,7 +456,8 @@ HTML
             animationState.currentDropTier = Math.min(animationState.tapCount, 4);
             let tierName = animationState.dropRarities[animationState.currentDropTier];
             
-            // Trigger temporary visual upgrade frame flashes
+            // Swap image source out instantly to reflect the upgraded tier visual look
+            obj.innerHTML = `<img src="${dropImages[tierName]}" alt="${tierName} Drop">`;
             obj.className = `tap-target flash-${tierName.toLowerCase()}`;
             setTimeout(() => { obj.className = "tap-target"; }, 300);
 
@@ -456,12 +469,10 @@ HTML
 
     function revealRewards() {
         document.getElementById('animatedObject').style.display = 'none';
-        
         let rewardBox = document.getElementById('rewardContent');
         rewardBox.innerHTML = animationState.finalRewardHTML;
         rewardBox.style.display = 'block';
-        
-        document.getElementById('tapPrompt').innerText = 'Tap rewards to exit';
+        document.getElementById('tapPrompt').innerText = 'Tap rewards screen to dismiss';
         updateUI();
     }
 
@@ -484,7 +495,6 @@ HTML
     function updateUI() {
         document.getElementById('coins').innerText = resources.coins;
         document.getElementById('powerPoints').innerText = resources.powerPoints;
-        
         let unlockedArr = brawlers.filter(b => b.unlocked);
         document.getElementById('unlockedCount').innerText = unlockedArr.length;
 
@@ -494,7 +504,6 @@ HTML
         brawlers.forEach((b, index) => {
             let card = document.createElement('div');
             card.className = `brawler-card ${b.unlocked ? 'unlocked' : ''} rarity-${b.rarity}`;
-            
             card.innerHTML = `
                 <div class="brawler-badge" style="color:var(--${b.rarity.toLowerCase()}-color)">${b.rarity}</div>
                 <div style="height: 50px; font-size: 2rem; margin-top:15px;">👤</div>
@@ -508,12 +517,10 @@ HTML
             } else if (b.unlocked && b.level >= 11) {
                 card.innerHTML += `<div style="color:var(--bs-yellow); font-size:0.9rem; margin-top:5px;">MAXED</div>`;
             }
-
             grid.appendChild(card);
         });
     }
 
-    // App Startup Entry point
     generateAllBrawlers();
     updateUI();
 </script>
