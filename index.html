@@ -265,7 +265,7 @@
     <div class="top-bar">
         <div class="resource-item" style="color: var(--bs-yellow);">🪙 <span id="coins">5000</span></div>
         <div class="resource-item" style="color: #ff66cc;">⚡ <span id="powerPoints">1000</span></div>
-        <div class="resource-item" style="color: #00ccff;">🏆 <span id="unlockedCount">1</span>/107</div>
+        <div class="resource-item" style="color: #00ccff;">🏆 <span id="unlockedCount">1</span>/<span id="totalCount">0</span></div>
     </div>
 
     <div class="nav-tabs">
@@ -302,11 +302,11 @@
         <div class="shop-grid">
             <div class="shop-card" style="background: linear-gradient(180deg, #1f1235 0%, #4c1c5c 100%);" onclick="openStarrDrop('Standard')">
                 <h3 style="color: #fff;">Roll Starr Drop</h3>
-                <p>Authentic 4-Tap Upgrade System!</p>
+                <p>4 Taps to Upgrade + 1 Tap to Claim!</p>
             </div>
         </div>
 
-        <h2>Special Event Event Drops</h2>
+        <h2>Special Event Drops</h2>
         <div class="shop-grid">
             <div class="shop-card" style="background: linear-gradient(180deg, #fff5cc, #cca300);" onclick="openStarrDrop('Angelic')">
                 <h3 style="color: #4d3d00;">Angelic Drop</h3>
@@ -331,7 +331,7 @@
     <div class="overlay" id="rewardOverlay">
         <div class="tap-target starr-spin-idle" id="animatedObject" onclick="handleTap()"></div>
         <div class="reward-box" id="rewardContent" onclick="closeOverlay()"></div>
-        <p id="tapPrompt" style="color: #ffcc00; font-size: 1.2rem; margin-top: 30px;">TAP TO OPEN!</p>
+        <p id="tapPrompt" style="color: #ffcc00; font-size: 1.4rem; margin-top: 30px; text-transform: uppercase; text-shadow: 2px 2px #000;"></p>
     </div>
 
 <script>
@@ -342,27 +342,38 @@
     
     let animationState = {
         currentType: '', 
-        dropType: 'Standard', // Standard, Angelic, Demonic, Chaos
+        dropType: 'Standard', 
         tapCount: 0,
-        maxTaps: 4, 
+        maxUpgradeTaps: 4, 
         currentTierIndex: 0, 
         finalRewardHTML: ''
     };
 
     function generateAllBrawlers() {
-        brawlers.push({ id: "shelly", name: "Shelly", unlocked: true, level: 1, rarity: "Rare" });
-        let namesPool = ["Colt", "Brock", "El Primo", "Poco", "Barley", "Rosa", "Bull", "Jessie", "Dynamike", "Tick", "8-Bit", "Rico", "Darryl", "Penny", "Carl", "Jacky", "Gus", "Piper", "Pam", "Frank", "Bibi", "Bea", "Nani", "Edgar", "Griff", "Grom", "Bonnie", "Gale", "Colette", "Lou", "Kit", "Melodie", "Angelo", "Draco", "Lily", "Clancy", "Moe", "Kenji", "Juju", "Chaxie"];
+        // Starting/Trophy Road
+        brawlers.push({ name: "Shelly", unlocked: true, level: 1, rarity: "Rare" });
 
-        for (let i = 2; i <= 107; i++) {
-            let baseName = namesPool[(i - 2) % namesPool.length];
-            brawlers.push({
-                id: `brawler_${i}`,
-                name: `${baseName} V${Math.ceil(i / namesPool.length)}`,
-                unlocked: false,
-                level: 1,
-                rarity: rarities[Math.floor(Math.random() * rarities.length)]
-            });
-        }
+        // Rare
+        let rares = ["Barley", "Brock", "Bull", "Colt", "El Primo", "Nita", "Poco", "Rosa"];
+        rares.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Rare" }));
+
+        // Super Rare
+        let superRares = ["8-Bit", "Carl", "Darryl", "Dynamike", "Gus", "Jacky", "Jessie", "Penny", "Rico", "Tick"];
+        superRares.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Super Rare" }));
+
+        // Epic
+        let epics = ["Ash", "Bea", "Belle", "Bibi", "Bo", "Bonnie", "Colette", "Edgar", "Emz", "Gale", "Griff", "Grom", "Hank", "Lola", "Mandy", "Maisie", "Nani", "Pam", "Pearl", "Piper", "Sam", "Stu"];
+        epics.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Epic" }));
+
+        // Mythic
+        let mythics = ["Angelo", "Berry", "Buzz", "Byron", "Chuck", "Doug", "Eve", "Fang", "Gene", "Gray", "Janet", "Lily", "Lou", "Max", "Melodie", "Mortis", "Mr. P", "Otis", "R-T", "Ruffs", "Squeak", "Sprouts", "Tara", "Willow"];
+        mythics.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Mythic" }));
+
+        // Legendary
+        let legendaries = ["Amber", "Charlie", "Chester", "Crow", "Draco", "Kenji", "Kit", "Leon", "Meg", "Sandy", "Spike", "Surge"];
+        legendaries.forEach(n => brawlers.push({ name: n, unlocked: false, level: 1, rarity: "Legendary" }));
+        
+        document.getElementById('totalCount').innerText = brawlers.length;
     }
 
     function switchTab(tabId) {
@@ -375,45 +386,31 @@
     function openBox(boxType) {
         animationState.currentType = 'box';
         animationState.tapCount = 0;
-        
-        let totalDrops = 4;
-        if (boxType === 'Big Trophy Box') totalDrops = 8;
-        if (boxType === 'Mega Trophy Box') totalDrops = 12;
-        if (boxType === 'Omega Trophy Box') totalDrops = 16;
-        if (boxType === 'Ultra Trophy Box') totalDrops = 20;
-
-        animationState.maxTaps = Math.min(5, Math.ceil(totalDrops / 3));
+        animationState.maxUpgradeTaps = Math.floor(Math.random() * 3) + 3; 
         
         let obj = document.getElementById('animatedObject');
         obj.innerHTML = '<span class="box-emoji">📦</span>';
         obj.className = "tap-target";
         obj.style.display = 'block';
         document.getElementById('rewardContent').style.display = 'none';
-        document.getElementById('tapPrompt').innerText = `TAP TO CRACK ${boxType.toUpperCase()}!`;
+        document.getElementById('tapPrompt').innerText = `TAP TO OPEN ${boxType.toUpperCase()}!`;
         document.getElementById('rewardOverlay').style.display = 'flex';
 
-        let coinGain = totalDrops * (Math.floor(Math.random() * 15) + 10);
-        let ppGain = totalDrops * (Math.floor(Math.random() * 8) + 4);
+        let totalDrops = boxType === 'Small Trophy Box' ? 4 : boxType === 'Big Trophy Box' ? 8 : boxType === 'Mega Trophy Box' ? 12 : boxType === 'Omega Trophy Box' ? 16 : 20;
+        let coinGain = totalDrops * 15;
+        let ppGain = totalDrops * 6;
         resources.coins += coinGain;
         resources.powerPoints += ppGain;
 
         let content = `<div style="color:var(--bs-yellow); font-size:2.8rem;">${boxType}</div>`;
-        content += `<div style="font-size: 1.8rem; margin: 15px 0;">Drops processed: ${totalDrops}<br>+🪙 ${coinGain}<br>+⚡ ${ppGain}</div>`;
-
-        if (boxType === 'Omega Trophy Box') {
-            content += `<div style="color:var(--epic-color); font-size: 1.6rem;">🎭 Guaranteed Epic Skin Cosmetic Added!</div>`;
-        }
-        if (boxType === 'Ultra Trophy Box' && Math.random() < 0.25) {
-            content += `<div style="color:var(--legendary-color); font-size: 1.8rem; text-shadow: 0 0 10px #ff33cc;">⚡ PULLED ULTRA EXCLUSIVE HYPERCHARGE SKIN! ⚡</div>`;
-        }
-
-        if (Math.random() < (0.01 * totalDrops)) {
+        content += `<div style="font-size: 1.8rem; margin: 15px 0;">+🪙 ${coinGain}<br>+⚡ ${ppGain}</div>`;
+        
+        if (Math.random() < 0.25) {
             let locked = brawlers.filter(b => !b.unlocked);
             if (locked.length > 0) {
                 let picked = locked[Math.floor(Math.random() * locked.length)];
                 picked.unlocked = true;
-                let normalized = picked.rarity.toLowerCase().replace(' ', '-');
-                content += `<div style="color:var(--${normalized.replace('-','')}-color); font-size: 2rem; margin-top:10px;">🎉 UNLOCKED ${picked.rarity.toUpperCase()}: ${picked.name}!</div>`;
+                content += `<div style="color:var(--bs-yellow); font-size: 2rem;">🎉 UNLOCKED BRAWLER: ${picked.name}!</div>`;
             }
         }
         animationState.finalRewardHTML = content;
@@ -424,25 +421,24 @@
         animationState.dropType = type;
         animationState.tapCount = 0;
         animationState.currentTierIndex = 0; 
-        animationState.maxTaps = 4; 
         
         let obj = document.getElementById('animatedObject');
         
-        // Dynamic generation based on drop type selection
         if(type === 'Standard') {
             obj.innerHTML = `<div class="drop-vector vec-rare">⭐</div>`;
-        } else if(type === 'Angelic') {
-            obj.innerHTML = `<div class="drop-vector vec-angelic">🪽</div>`;
-        } else if(type === 'Demonic') {
-            obj.innerHTML = `<div class="drop-vector vec-demonic">😈</div>`;
+            document.getElementById('tapPrompt').innerText = '4 CHANCES TO UPGRADE REMAINING';
+            document.getElementById('tapPrompt').style.color = "#ffcc00";
         } else {
-            obj.innerHTML = `<div class="drop-vector vec-chaos">🌀</div>`;
+            let icon = type === 'Angelic' ? '🪽' : type === 'Demonic' ? '😈' : '🌀';
+            let cls = type === 'Angelic' ? 'vec-angelic' : type === 'Demonic' ? 'vec-demonic' : 'vec-chaos';
+            obj.innerHTML = `<div class="drop-vector ${cls}">${icon}</div>`;
+            document.getElementById('tapPrompt').innerText = '4 TAPS TO STABILIZE DRIP';
+            document.getElementById('tapPrompt').style.color = "#ffcc00";
         }
 
         obj.style.display = 'block';
         obj.className = "tap-target starr-spin-idle"; 
         document.getElementById('rewardContent').style.display = 'none';
-        document.getElementById('tapPrompt').innerText = '4 TAPS REMAINING...';
         document.getElementById('rewardOverlay').style.display = 'flex';
     }
 
@@ -462,33 +458,28 @@
             content = `<div style="color:${color}; font-size: 3rem;">⚡ ${finalTier} Starr Drop ⚡</div>`;
             content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 ${coins}<br>+⚡ ${pp}</div>`;
 
-            let dropChance = finalTier === "Legendary" ? 0.8 : finalTier === "Mythic" ? 0.3 : finalTier === "Epic" ? 0.1 : 0.02;
-            if (Math.random() < dropChance) {
-                let locked = brawlers.filter(b => !b.unlocked);
+            // Rarity targeted pool extraction
+            if (Math.random() < 0.40) {
+                let locked = brawlers.filter(b => !b.unlocked && b.rarity === finalTier);
+                if (locked.length === 0) locked = brawlers.filter(b => !b.unlocked); // Fallback to any locked
+                
                 if (locked.length > 0) {
                     let picked = locked[Math.floor(Math.random() * locked.length)];
                     picked.unlocked = true;
                     content += `<br><div style="color:var(--bs-yellow)">✨ NEW BRAWLER: ${picked.name}! ✨</div>`;
                 }
             }
-        } 
-        else if (animationState.dropType === 'Angelic') {
-            resources.powerPoints += 450;
-            content = `<div style="color:var(--angelic-color); font-size: 2.6rem; text-shadow: 0 0 10px #fff;">🪽 Angelic Drop Reward 🪽</div>`;
-            content += `<div style="font-size: 1.8rem; margin-top:10px;">+⚡ 450 Power Points<br><span style="color:#ffd700;">✨ Granted Celestial Holy Cosmetic Item!</span></div>`;
-        } 
-        else if (animationState.dropType === 'Demonic') {
-            resources.coins += 1200;
-            content = `<div style="color:var(--demonic-color); font-size: 2.6rem; text-shadow: 0 0 10px #ff0000;">😈 Demonic Drop Reward 😈</div>`;
-            content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 1200 Gold Coins<br><span style="color:#ff3333;">🔥 Released Dark Underworld Malice Variant!</span></div>`;
-        } 
-        else if (animationState.dropType === 'Chaos') {
-            let coinRoll = Math.floor(Math.random() * 2000);
-            let ppRoll = Math.floor(Math.random() * 800);
-            resources.coins += coinRoll;
-            resources.powerPoints += ppRoll;
-            content = `<div style="color:var(--chaos-color); font-size: 2.6rem;">🌀 Chaos Anomaly Drop 🌀</div>`;
-            content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 ${coinRoll} Coins<br>+⚡ ${ppRoll} Power Points</div>`;
+        } else {
+            if (animationState.dropType === 'Angelic') {
+                resources.powerPoints += 450;
+                content = `<div style="color:var(--angelic-color); font-size: 2.6rem;">🪽 Angelic Drop Reward 🪽</div>+⚡ 450 Power Points`;
+            } else if (animationState.dropType === 'Demonic') {
+                resources.coins += 1200;
+                content = `<div style="color:var(--demonic-color); font-size: 2.6rem;">😈 Demonic Drop Reward 😈</div>+🪙 1200 Coins`;
+            } else {
+                resources.coins += 400; resources.powerPoints += 200;
+                content = `<div style="color:var(--chaos-color); font-size: 2.6rem;">🌀 Chaos Drop Reward 🌀</div>+🪙 400 Coins <br> +⚡ 200 Power Points`;
+            }
         }
 
         animationState.finalRewardHTML = content;
@@ -501,28 +492,34 @@
         obj.classList.add('shake-anim');
         setTimeout(() => obj.classList.remove('shake-anim'), 200);
 
+        animationState.tapCount++;
+
         if (animationState.currentType === 'box') {
-            animationState.tapCount++;
-            if (animationState.tapCount >= animationState.maxTaps) {
+            if (animationState.tapCount >= animationState.maxUpgradeTaps) {
                 revealRewards();
             } else {
-                document.getElementById('tapPrompt').innerText = `${animationState.maxTaps - animationState.tapCount} Taps left...`;
+                document.getElementById('tapPrompt').innerText = `TAP! ITEMS REMAINING...`;
             }
         } 
         else if (animationState.currentType === 'drop') {
-            animationState.tapCount++;
-            
-            if (animationState.dropType === 'Standard' && animationState.currentTierIndex < 4 && Math.random() < 0.45) {
-                animationState.currentTierIndex++;
-                let currentTierName = rarities[animationState.currentTierIndex];
-                let cssClass = currentTierName.toLowerCase().replace(' ', '-');
-                obj.innerHTML = `<div class="drop-vector vec-${cssClass}">⭐</div>`;
-            }
-
-            if (animationState.tapCount >= animationState.maxTaps) {
+            if (animationState.tapCount <= 4) {
+                if (animationState.dropType === 'Standard' && animationState.currentTierIndex < 4 && Math.random() < 0.45) {
+                    animationState.currentTierIndex++;
+                    let currentTierName = rarities[animationState.currentTierIndex];
+                    let cssClass = currentTierName.toLowerCase().replace(' ', '-');
+                    obj.innerHTML = `<div class="drop-vector vec-${cssClass}">⭐</div>`;
+                }
+                
+                if (animationState.tapCount < 4) {
+                    document.getElementById('tapPrompt').innerText = `${4 - animationState.tapCount} UPGRADE CHANCES LEFT`;
+                } else {
+                    let currentRarityLabel = animationState.dropType === 'Standard' ? rarities[animationState.currentTierIndex] : animationState.dropType;
+                    document.getElementById('tapPrompt').innerText = `💥 OPEN ${currentRarityLabel.toUpperCase()} DROP! 💥`;
+                    document.getElementById('tapPrompt').style.color = "#00ff66";
+                }
+            } 
+            else if (animationState.tapCount === 5) {
                 processFinalStarrDropLoot();
-            } else {
-                document.getElementById('tapPrompt').innerText = `${animationState.maxTaps - animationState.tapCount} Taps remaining...`;
             }
         }
     }
@@ -533,6 +530,7 @@
         rewardBox.innerHTML = animationState.finalRewardHTML;
         rewardBox.style.display = 'block';
         document.getElementById('tapPrompt').innerText = 'Tap rewards screen to dismiss';
+        document.getElementById('tapPrompt').style.color = "#ffcc00";
         updateUI();
     }
 
