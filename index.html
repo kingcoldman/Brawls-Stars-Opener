@@ -3,84 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brawl Stars Box Simulator (Unofficial)</title>
+    <title>Advanced Brawl Stars Box Simulator</title>
     <style>
+        :root {
+            --common: #b1b1b1;
+            --rare: #46e246;
+            --super-rare: #3ca0ff;
+            --epic: #d84eff;
+            --mythic: #ff4e70;
+            --legendary: #fff14e;
+        }
         body {
-            font-family: 'Arial', sans-serif;
-            background: #1a1a2e;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            background: linear-gradient(135deg, #111726, #1c2942);
             color: white;
             text-align: center;
-            padding: 20px;
+            padding: 10px;
+            margin: 0;
+            user-select: none;
         }
         .container {
-            max-width: 500px;
-            margin: 0 auto;
+            max-width: 600px;
+            margin: 20px auto;
             background: #162447;
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 10px 25px rgba(0,0,0,0.5);
+            border-radius: 20px;
+            border: 4px solid #1f4068;
+            box-shadow: 0px 15px 35px rgba(0,0,0,0.6);
         }
-        .stats {
+        .header {
+            font-size: 28px;
+            color: #f4b41a;
+            text-shadow: 2px 2px #000;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+        .stats-bar {
             display: flex;
             justify-content: space-around;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 16px;
             margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+        .stat-item { display: flex; align-items: center; gap: 5px; }
+        .shop {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .box-btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            border: 3px solid #000;
+            border-radius: 12px;
+            cursor: pointer;
+            text-shadow: 1px 1px #000;
+            box-shadow: 0 5px 0 #000;
+            transition: 0.1s;
+        }
+        .box-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #000;
+        }
+        .brawl-box-btn { background: linear-gradient(#3ca0ff, #1d72c2); }
+        .mega-box-btn { background: linear-gradient(#ffdd00, #d48800); color: #000; text-shadow: none; }
+        
+        /* Box Screen Overlay */
+        .box-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .box-graphic {
+            width: 150px;
+            height: 150px;
+            background: #ff4a6b;
+            margin-bottom: 20px;
+            border-radius: 20px;
+            border: 5px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+        .shake { animation: shake 0.2s infinite; }
+        @keyframes shake {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            20% { transform: translate(-1px, -2px) rotate(-1deg); }
+            40% { transform: translate(-3px, 0px) rotate(1deg); }
+            60% { transform: translate(0px, 2px) rotate(0deg); }
+            80% { transform: translate(1px, -1px) rotate(1deg); }
+            100% { transform: translate(-1px, 2px) rotate(-1deg); }
+        }
+        .items-left {
+            position: absolute;
+            bottom: 20%;
+            right: 20%;
+            background: #ff4e70;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50%;
+            font-size: 24px;
+            border: 3px solid white;
+        }
+        .reward-display {
+            font-size: 32px;
+            text-shadow: 3px 3px #000;
+            animation: rewardPop 0.25s ease-out;
+        }
+        @keyframes rewardPop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Collection Styles */
+        .collection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .brawler-card {
             background: #1f4068;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 10px;
+            border: 2px solid #000;
+            opacity: 0.4;
+            font-size: 14px;
         }
-        button {
-            background: #e43f5a;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        button:hover {
-            transform: scale(1.05);
-            background: #ff4a6b;
-        }
-        .result-box {
-            margin-top: 20px;
-            min-height: 100px;
-            padding: 15px;
-            background: #1f4068;
-            border-radius: 8px;
-            font-size: 18px;
-        }
-        .unlock {
-            color: #ffde7d;
-            font-weight: bold;
-            animation: pop 0.3s ease-in-out;
-        }
-        @keyframes pop {
-            0% { transform: scale(0.8); }
-            100% { transform: scale(1); }
-        }
-        .disclaimer {
-            font-size: 11px;
-            color: #888;
-            margin-top: 30px;
-        }
+        .brawler-card.unlocked { opacity: 1; border-color: #f4b41a; }
+        
+        .disclaimer { font-family: Arial; font-size: 11px; color: #666; margin-top: 40px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Brawl Box Simulator</h2>
+    <div class="header">BOX SIMULATOR</div>
     
-    <div class="stats">
-        <div>Coins: <span id="coins">0</span></div>
-        <div>Gems: <span id="gems">0</span></div>
-        <div>Brawlers: <span id="brawler-count">0</span>/4</div>
+    <div class="stats-bar">
+        <div class="stat-item">💰 Coins: <span id="coins">0</span></div>
+        <div class="stat-item">💎 Gems: <span id="gems">100</span></div>
+        <div class="stat-item">📈 Pull Chance: <span id="chance">0.11%</span></div>
     </div>
 
-    <button onclick="openBox()">Open Brawl Box</button>
+    <div class="shop">
+        <button class="box-btn brawl-box-btn" onclick="startBoxOpening('brawl')">Brawl Box<br><small>Free</small></button>
+        <button class="box-btn mega-box-btn" onclick="startBoxOpening('mega')">Mega Box<br><small>80 Gems</small></button>
+    </div>
 
-    <div class="result-box" id="result">Click the button to open a box!</div>
+    <div class="header" style="font-size: 20px;">BRAWLERS (<span id="unlocked-count">0</span>/12)</div>
+    <div class="collection" id="collection-grid"></div>
+</div>
+
+<div class="box-screen" id="boxScreen" onclick="advanceBox()">
+    <div id="rewardText" class="reward-display"></div>
+    <div id="boxGraphic" class="box-graphic">📦</div>
+    <div id="itemsLeftBadge" class="items-left">0</div>
 </div>
 
 <p class="disclaimer">
@@ -89,67 +183,168 @@
 
 <script>
     // Game State
-    let player = {
+    let state = {
         coins: 0,
-        gems: 0,
-        unlockedBrawlers: []
+        gems: 100,
+        legendaryChance: 0.1100, // Dynamic luck calculation system
+        unlocked: []
     };
 
-    // Available Brawlers pool and their drop rates (weights)
-    const brawlersPool = [
-        { name: "Shelly", rarity: "Common", weight: 50 },
-        { name: "El Primo", rarity: "Rare", weight: 30 },
-        { name: "Piper", rarity: "Epic", weight: 15 },
-        { name: "Leon", rarity: "Legendary", weight: 5 }
+    // Robust Master Brawler Database
+    const brawlers = [
+        { id: "shelly", name: "Shelly", rarity: "Common", color: "var(--common)" },
+        { id: "colt", name: "Colt", rarity: "Common", color: "var(--common)" },
+        { id: "elprimo", name: "El Primo", rarity: "Rare", color: "var(--rare)" },
+        { id: "poco", name: "Poco", rarity: "Rare", color: "var(--rare)" },
+        { id: "darryl", name: "Darryl", rarity: "Super-Rare", color: "var(--super-rare)" },
+        { id: "rico", name: "Rico", rarity: "Super-Rare", color: "var(--super-rare)" },
+        { id: "piper", name: "Piper", rarity: "Epic", color: "var(--epic)" },
+        { id: "frank", name: "Frank", rarity: "Epic", color: "var(--epic)" },
+        { id: "mortis", name: "Mortis", rarity: "Mythic", color: "var(--mythic)" },
+        { id: "tara", name: "Tara", rarity: "Mythic", color: "var(--mythic)" },
+        { id: "spike", name: "Spike", rarity: "Legendary", color: "var(--legendary)" },
+        { id: "leon", name: "Leon", rarity: "Legendary", color: "var(--legendary)" }
     ];
 
-    function openBox() {
-        const resultDiv = document.getElementById("result");
-        
-        // 1. Roll for random Currency rewards
-        let coinsFound = Math.floor(Math.random() * 50) + 20; // 20-70 coins
-        let gemsFound = Math.random() < 0.2 ? Math.floor(Math.random() * 5) + 3 : 0; // 20% chance for gems
-        
-        player.coins += coinsFound;
-        player.gems += gemsFound;
+    // Variables running the interactive tapping sequences
+    let currentBoxQueue = [];
+    let queueIndex = 0;
+    let currentBoxType = '';
 
-        let outputText = `📦 <strong>Box Rewards:</strong><br>💰 +${coinsFound} Coins`;
-        if (gemsFound > 0) outputText += `<br>💎 +${gemsFound} Gems`;
+    // Initialize Game Framework Grid
+    function init() {
+        const grid = document.getElementById("collection-grid");
+        grid.innerHTML = "";
+        brawlers.forEach(b => {
+            grid.innerHTML += `
+                <div class="brawler-card" id="card-${b.id}" style="background: linear-gradient(145deg, #1f4068, ${b.color}44)">
+                    <div style="font-weight:bold; color:${b.color}">${b.rarity.toUpperCase()}</div>
+                    <div style="font-size:18px; margin-top:5px;">${b.name}</div>
+                </div>`;
+        });
+        updateUI();
+    }
 
-        // 2. Roll for a Brawler (15% chance to trigger a character pull)
-        if (Math.random() < 0.15) {
-            let pulledBrawler = getRandomBrawler();
+    function updateUI() {
+        document.getElementById("coins").innerText = state.coins;
+        document.getElementById("gems").innerText = state.gems;
+        document.getElementById("chance").innerText = state.legendaryChance.toFixed(4) + "%";
+        document.getElementById("unlocked-count").innerText = state.unlocked.length;
+        
+        brawlers.forEach(b => {
+            const card = document.getElementById(`card-${b.id}`);
+            if (state.unlocked.includes(b.id)) {
+                card.classList.add("unlocked");
+            }
+        });
+    }
+
+    // Handles initial generation of contents inside boxes
+    function startBoxOpening(type) {
+        if (type === 'mega') {
+            if (state.gems < 80) { alert("Not enough Gems!"); return; }
+            state.gems -= 80;
+        }
+        
+        currentBoxType = type;
+        currentBoxQueue = [];
+        queueIndex = 0;
+
+        // Calculate item drops mathematically
+        let goldDrop = type === 'mega' ? Math.floor(Math.random() * 300) + 200 : Math.floor(Math.random() * 50) + 20;
+        currentBoxQueue.push({ type: 'coins', amount: goldDrop });
+
+        // Rolling standard drop tables 
+        let rolls = type === 'mega' ? 5 : 1;
+        for (let i = 0; i < rolls; i++) {
+            let roll = Math.random() * 100;
             
-            // Check if player already has them
-            if (!player.unlockedBrawlers.includes(pulledBrawler.name)) {
-                player.unlockedBrawlers.push(pulledBrawler.name);
-                outputText += `<br><br><span class="unlock">⭐ NEW BRAWLER! UNLOCKED ${pulledBrawler.name.toUpperCase()} (${pulledBrawler.rarity})! ⭐</span>`;
+            // Check dynamic drop thresholds
+            if (roll < state.legendaryChance) {
+                currentBoxQueue.push({ type: 'brawler', rarity: 'Legendary' });
+            } else if (roll < state.legendaryChance + 1.5) {
+                currentBoxQueue.push({ type: 'brawler', rarity: 'Mythic' });
+            } else if (roll < 8) {
+                currentBoxQueue.push({ type: 'brawler', rarity: 'Epic' });
+            } else if (roll < 20) {
+                currentBoxQueue.push({ type: 'brawler', rarity: 'Super-Rare' });
+            } else if (roll < 45) {
+                currentBoxQueue.push({ type: 'brawler', rarity: 'Rare' });
+            } else if (roll < 75) {
+                currentBoxQueue.push({ type: 'brawler', rarity: 'Common' });
             } else {
-                // Duplicate fallback (like bonus coins)
-                player.coins += 100;
-                outputText += `<br><br>👟 Duplicate Pull: Got ${pulledBrawler.name} (Converted to +100 Coins)`;
+                // Currency bonus fallback
+                currentBoxQueue.push({ type: 'gems', amount: Math.floor(Math.random() * 3) + 2 });
             }
         }
 
-        // Update the screen
-        document.getElementById("coins").innerText = player.coins;
-        document.getElementById("gems").innerText = player.gems;
-        document.getElementById("brawler-count").innerText = player.unlockedBrawlers.length;
-        resultDiv.innerHTML = outputText;
+        // Configure layout layer for tapping phase
+        document.getElementById("boxScreen").style.display = "flex";
+        document.getElementById("boxGraphic").style.display = "flex";
+        document.getElementById("boxGraphic").classList.add("shake");
+        document.getElementById("rewardText").innerHTML = type === 'mega' ? "MEGA BOX" : "BRAWL BOX";
+        document.getElementById("itemsLeftBadge").style.display = "block";
+        document.getElementById("itemsLeftBadge").innerText = currentBoxQueue.length;
     }
 
-    // Weighted Random Algorithm
-    function getRandomBrawler() {
-        let totalWeight = brawlersPool.reduce((sum, brawler) => sum + brawler.weight, 0);
-        let randomNum = Math.random() * totalWeight;
-        
-        for (let i = 0; i < brawlersPool.length; i++) {
-            if (randomNum < brawlersPool[i].weight) {
-                return brawlersPool[i];
+    // Progresses sequentially step-by-step through the reward queue array
+    function advanceBox() {
+        const graphic = document.getElementById("boxGraphic");
+        const rewardText = document.getElementById("rewardText");
+        const badge = document.getElementById("itemsLeftBadge");
+
+        // First click cancels box graphics, starts item reveal sequence
+        if (graphic.style.display !== "none") {
+            graphic.classList.remove("shake");
+            graphic.style.display = "none";
+        }
+
+        if (queueIndex < currentBoxQueue.length) {
+            let item = currentBoxQueue[queueIndex];
+            badge.innerText = (currentBoxQueue.length - 1) - queueIndex;
+            
+            if (item.type === 'coins') {
+                state.coins += item.amount;
+                rewardText.innerHTML = `💰<br>+${item.amount}<br><span style="color:#fff">Coins</span>`;
+            } else if (item.type === 'gems') {
+                state.gems += item.amount;
+                rewardText.innerHTML = `💎<br>+${item.amount}<br><span style="color:#3ca0ff">Gems</span>`;
+            } else if (item.type === 'brawler') {
+                // Filter valid brawlers fitting selected category pool
+                let options = brawlers.filter(b => b.rarity === item.rarity);
+                let pulled = options[Math.floor(Math.random() * options.length)];
+                
+                if (!state.unlocked.includes(pulled.id)) {
+                    state.unlocked.push(pulled.id);
+                    rewardText.innerHTML = `⭐ NEW BRAWLER! ⭐<br><span style="color:${pulled.color}">${pulled.name.toUpperCase()}</span><br><small>${pulled.rarity}</small>`;
+                    
+                    // Reset legendary luck scaling factor if a legendary is pulled
+                    if (item.rarity === 'Legendary') state.legendaryChance = 0.1100;
+                } else {
+                    // Duplicate algorithm logic conversion
+                    let refund = item.rarity === 'Legendary' ? 500 : 100;
+                    state.coins += refund;
+                    rewardText.innerHTML = `👟 DUPLICATE<br><span style="color:${pulled.color}">${pulled.name}</span><br><small>Converted to +${refund} Coins</small>`;
+                }
             }
-            randomNum -= brawlersPool[i].weight;
+            
+            queueIndex++;
+        } else {
+            // Processing Pity Mechanics when no brawlers are successfully drawn
+            if (currentBoxType === 'mega') {
+                state.legendaryChance += 0.0050; // Slowly scale chances up
+            } else {
+                state.legendaryChance += 0.0008;
+            }
+            
+            // Close dynamic overlay screen completely
+            document.getElementById("boxScreen").style.display = "none";
+            updateUI();
         }
     }
+
+    // Run initializer setup execution
+    init();
 </script>
 
 </body>
