@@ -15,6 +15,9 @@
             --epic-color: #cb3bf5;
             --mythic-color: #ff3c3c;
             --legendary-color: #ffcc00;
+            --angelic-color: #fffdd0;
+            --demonic-color: #660000;
+            --chaos-color: #9900ff;
         }
 
         body {
@@ -180,11 +183,28 @@
             transition: transform 0.1s;
         }
 
-        .tap-target img {
-            width: 220px;
-            height: 220px;
-            object-fit: contain;
+        /* Fallback Interactive Drop Vector Frame CSS */
+        .drop-vector {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4.5rem;
+            box-shadow: 0 0 25px rgba(255,255,255,0.2);
+            border: 6px solid #fff;
+            text-shadow: 2px 2px 0px #000;
         }
+
+        .vec-rare { background: radial-gradient(circle, #a1ffb3, var(--rare-color)); border-color: #a1ffb3; }
+        .vec-super-rare { background: radial-gradient(circle, #99ddff, var(--superrare-color)); border-color: #99ddff; }
+        .vec-epic { background: radial-gradient(circle, #f0b3ff, var(--epic-color)); border-color: #f0b3ff; }
+        .vec-mythic { background: radial-gradient(circle, #ffb3b3, var(--mythic-color)); border-color: #ffb3b3; }
+        .vec-legendary { background: radial-gradient(circle, #ffe680, var(--legendary-color)); border-color: #ffe680; }
+        .vec-angelic { background: radial-gradient(circle, #ffffff, #ffd700); border-color: #fff; box-shadow: 0 0 40px #fff; }
+        .vec-demonic { background: radial-gradient(circle, #330000, #ff0000); border-color: #660000; box-shadow: 0 0 40px #ff0000; }
+        .vec-chaos { background: radial-gradient(circle, #4d0099, #330066); border-color: #9900ff; box-shadow: 0 0 40px #9900ff; }
 
         .box-emoji {
             font-size: 7rem;
@@ -198,13 +218,6 @@
         .shake-anim {
             animation: shake 0.2s ease-in-out;
         }
-
-        /* Upgrade Flash Keyframes */
-        .flash-rare { animation: flashGlowRare 0.3s ease-out; }
-        .flash-superrare { animation: flashGlowSuper 0.3s ease-out; }
-        .flash-epic { animation: flashGlowEpic 0.3s ease-out; }
-        .flash-mythic { animation: flashGlowMythic 0.3s ease-out; }
-        .flash-legendary { animation: flashGlowLegendary 0.3s ease-out; }
 
         /* Reward Pop Up */
         .reward-box {
@@ -223,35 +236,9 @@
 
         @keyframes shake {
             0% { transform: scale(1) rotate(0deg); }
-            20% { transform: scale(0.9) rotate(-8deg); }
-            60% { transform: scale(1.15) rotate(8deg); }
+            20% { transform: scale(0.85) rotate(-10deg); }
+            60% { transform: scale(1.2) rotate(10deg); }
             100% { transform: scale(1) rotate(0deg); }
-        }
-
-        @keyframes flashGlowRare {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--rare-color)); }
-            100% { transform: scale(1); filter: brightness(1); }
-        }
-        @keyframes flashGlowSuper {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--superrare-color)); }
-            100% { transform: scale(1); filter: brightness(1); }
-        }
-        @keyframes flashGlowEpic {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--epic-color)); }
-            100% { transform: scale(1); filter: brightness(1); }
-        }
-        @keyframes flashGlowMythic {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--mythic-color)); }
-            100% { transform: scale(1); filter: brightness(1); }
-        }
-        @keyframes flashGlowLegendary {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--legendary-color)); }
-            100% { transform: scale(1); filter: brightness(1); }
         }
 
         @keyframes burstPop {
@@ -313,9 +300,25 @@
 
         <h2>Starr Drops</h2>
         <div class="shop-grid">
-            <div class="shop-card" style="background: linear-gradient(180deg, #1f1235 0%, #4c1c5c 100%);" onclick="openStarrDrop()">
-                <h3 style="color: #fff;">Tap to Roll Starr Drop</h3>
+            <div class="shop-card" style="background: linear-gradient(180deg, #1f1235 0%, #4c1c5c 100%);" onclick="openStarrDrop('Standard')">
+                <h3 style="color: #fff;">Roll Starr Drop</h3>
                 <p>Authentic 4-Tap Upgrade System!</p>
+            </div>
+        </div>
+
+        <h2>Special Event Event Drops</h2>
+        <div class="shop-grid">
+            <div class="shop-card" style="background: linear-gradient(180deg, #fff5cc, #cca300);" onclick="openStarrDrop('Angelic')">
+                <h3 style="color: #4d3d00;">Angelic Drop</h3>
+                <p>Chance for celestial skins & high power drops</p>
+            </div>
+            <div class="shop-card" style="background: linear-gradient(180deg, #4d0000, #1a0000);" onclick="openStarrDrop('Demonic')">
+                <h3 style="color: #ff3333;">Demonic Drop</h3>
+                <p>Chance for underworld cosmetics & massive coins</p>
+            </div>
+            <div class="shop-card" style="background: linear-gradient(180deg, #3d0066, #140024);" onclick="openStarrDrop('Chaos')">
+                <h3 style="color: #cc33ff;">Chaos Drop</h3>
+                <p>Completely unpredictable random prize modifiers</p>
             </div>
         </div>
     </div>
@@ -335,19 +338,11 @@
     let resources = { coins: 5000, powerPoints: 1000 };
     let brawlers = [];
 
-    // FIXED: Reliable alternative direct-host asset URLs for Starr Drop levels
-    const dropImages = {
-        "Rare": "https://images.uncyc.org/pt/c/c1/Starr_Drop_Rare.png",
-        "Super Rare": "https://images.uncyc.org/pt/f/fa/Starr_Drop_Super_Rare.png",
-        "Epic": "https://images.uncyc.org/pt/b/b3/Starr_Drop_Epic.png",
-        "Mythic": "https://images.uncyc.org/pt/2/22/Starr_Drop_Mythic.png",
-        "Legendary": "https://images.uncyc.org/pt/0/07/Starr_Drop_Legendary.png"
-    };
-
     const rarities = ["Rare", "Super Rare", "Epic", "Mythic", "Legendary"];
     
     let animationState = {
         currentType: '', 
+        dropType: 'Standard', // Standard, Angelic, Demonic, Chaos
         tapCount: 0,
         maxTaps: 4, 
         currentTierIndex: 0, 
@@ -374,7 +369,7 @@
         document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        if(event) event.currentTarget.classList.add('active');
+        if(window.event) window.event.currentTarget.classList.add('active');
     }
 
     function openBox(boxType) {
@@ -417,21 +412,33 @@
             if (locked.length > 0) {
                 let picked = locked[Math.floor(Math.random() * locked.length)];
                 picked.unlocked = true;
-                let normalized = picked.rarity.toLowerCase().replace(' ', '');
-                content += `<div style="color:var(--${normalized}-color); font-size: 2rem; margin-top:10px;">🎉 UNLOCKED ${picked.rarity.toUpperCase()}: ${picked.name}!</div>`;
+                let normalized = picked.rarity.toLowerCase().replace(' ', '-');
+                content += `<div style="color:var(--${normalized.replace('-','')}-color); font-size: 2rem; margin-top:10px;">🎉 UNLOCKED ${picked.rarity.toUpperCase()}: ${picked.name}!</div>`;
             }
         }
         animationState.finalRewardHTML = content;
     }
 
-    function openStarrDrop() {
+    function openStarrDrop(type) {
         animationState.currentType = 'drop';
+        animationState.dropType = type;
         animationState.tapCount = 0;
         animationState.currentTierIndex = 0; 
         animationState.maxTaps = 4; 
         
         let obj = document.getElementById('animatedObject');
-        obj.innerHTML = `<img src="${dropImages['Rare']}" alt="Starr Drop">`;
+        
+        // Dynamic generation based on drop type selection
+        if(type === 'Standard') {
+            obj.innerHTML = `<div class="drop-vector vec-rare">⭐</div>`;
+        } else if(type === 'Angelic') {
+            obj.innerHTML = `<div class="drop-vector vec-angelic">🪽</div>`;
+        } else if(type === 'Demonic') {
+            obj.innerHTML = `<div class="drop-vector vec-demonic">😈</div>`;
+        } else {
+            obj.innerHTML = `<div class="drop-vector vec-chaos">🌀</div>`;
+        }
+
         obj.style.display = 'block';
         obj.className = "tap-target starr-spin-idle"; 
         document.getElementById('rewardContent').style.display = 'none';
@@ -440,29 +447,50 @@
     }
 
     function processFinalStarrDropLoot() {
-        let finalTier = rarities[animationState.currentTierIndex];
-        let normalized = finalTier.toLowerCase().replace(' ', '');
-        let color = `var(--${normalized}-color)`;
+        let content = '';
         
-        let multiplier = animationState.currentTierIndex + 1;
-        let coins = 60 * multiplier;
-        let pp = 25 * multiplier;
+        if (animationState.dropType === 'Standard') {
+            let finalTier = rarities[animationState.currentTierIndex];
+            let color = `var(--${finalTier.toLowerCase().replace(' ', '')}-color)`;
+            let multiplier = animationState.currentTierIndex + 1;
+            let coins = 60 * multiplier;
+            let pp = 25 * multiplier;
 
-        resources.coins += coins;
-        resources.powerPoints += pp;
+            resources.coins += coins;
+            resources.powerPoints += pp;
 
-        let content = `<div style="color:${color}; font-size: 3rem;">⚡ ${finalTier} Starr Drop ⚡</div>`;
-        content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 ${coins}<br>+⚡ ${pp}</div>`;
+            content = `<div style="color:${color}; font-size: 3rem;">⚡ ${finalTier} Starr Drop ⚡</div>`;
+            content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 ${coins}<br>+⚡ ${pp}</div>`;
 
-        let dropChance = finalTier === "Legendary" ? 0.8 : finalTier === "Mythic" ? 0.3 : finalTier === "Epic" ? 0.1 : 0.02;
-        if (Math.random() < dropChance) {
-            let locked = brawlers.filter(b => !b.unlocked);
-            if (locked.length > 0) {
-                let picked = locked[Math.floor(Math.random() * locked.length)];
-                picked.unlocked = true;
-                content += `<br><div style="color:var(--bs-yellow)">✨ NEW BRAWLER: ${picked.name}! ✨</div>`;
+            let dropChance = finalTier === "Legendary" ? 0.8 : finalTier === "Mythic" ? 0.3 : finalTier === "Epic" ? 0.1 : 0.02;
+            if (Math.random() < dropChance) {
+                let locked = brawlers.filter(b => !b.unlocked);
+                if (locked.length > 0) {
+                    let picked = locked[Math.floor(Math.random() * locked.length)];
+                    picked.unlocked = true;
+                    content += `<br><div style="color:var(--bs-yellow)">✨ NEW BRAWLER: ${picked.name}! ✨</div>`;
+                }
             }
+        } 
+        else if (animationState.dropType === 'Angelic') {
+            resources.powerPoints += 450;
+            content = `<div style="color:var(--angelic-color); font-size: 2.6rem; text-shadow: 0 0 10px #fff;">🪽 Angelic Drop Reward 🪽</div>`;
+            content += `<div style="font-size: 1.8rem; margin-top:10px;">+⚡ 450 Power Points<br><span style="color:#ffd700;">✨ Granted Celestial Holy Cosmetic Item!</span></div>`;
+        } 
+        else if (animationState.dropType === 'Demonic') {
+            resources.coins += 1200;
+            content = `<div style="color:var(--demonic-color); font-size: 2.6rem; text-shadow: 0 0 10px #ff0000;">😈 Demonic Drop Reward 😈</div>`;
+            content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 1200 Gold Coins<br><span style="color:#ff3333;">🔥 Released Dark Underworld Malice Variant!</span></div>`;
+        } 
+        else if (animationState.dropType === 'Chaos') {
+            let coinRoll = Math.floor(Math.random() * 2000);
+            let ppRoll = Math.floor(Math.random() * 800);
+            resources.coins += coinRoll;
+            resources.powerPoints += ppRoll;
+            content = `<div style="color:var(--chaos-color); font-size: 2.6rem;">🌀 Chaos Anomaly Drop 🌀</div>`;
+            content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 ${coinRoll} Coins<br>+⚡ ${ppRoll} Power Points</div>`;
         }
+
         animationState.finalRewardHTML = content;
         revealRewards();
     }
@@ -484,14 +512,11 @@
         else if (animationState.currentType === 'drop') {
             animationState.tapCount++;
             
-            if (animationState.currentTierIndex < 4 && Math.random() < 0.45) {
+            if (animationState.dropType === 'Standard' && animationState.currentTierIndex < 4 && Math.random() < 0.45) {
                 animationState.currentTierIndex++;
                 let currentTierName = rarities[animationState.currentTierIndex];
-                let normalized = currentTierName.toLowerCase().replace(' ', '');
-                
-                obj.innerHTML = `<img src="${dropImages[currentTierName]}" alt="${currentTierName} Drop">`;
-                obj.className = `tap-target starr-spin-idle flash-${normalized}`;
-                setTimeout(() => { obj.className = "tap-target starr-spin-idle"; }, 300);
+                let cssClass = currentTierName.toLowerCase().replace(' ', '-');
+                obj.innerHTML = `<div class="drop-vector vec-${cssClass}">⭐</div>`;
             }
 
             if (animationState.tapCount >= animationState.maxTaps) {
