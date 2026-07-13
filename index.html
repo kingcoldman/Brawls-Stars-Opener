@@ -1,3 +1,8 @@
+Here is the complete, unified code for your index.html file. It combines the structured layout, all 107 brawlers generated programmatically by rarity, the 4 Box types, the Starr Drop system, and the interactive CSS shaking and upgrading animations.
+
+You can copy this entire block and paste it straight into your repository file:
+
+HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +29,7 @@
             margin: 0;
             padding: 0;
             user-select: none;
+            overflow-x: hidden;
         }
 
         /* Top Bar */
@@ -126,12 +132,17 @@
             text-align: center;
             filter: grayscale(80%);
             opacity: 0.6;
+            transition: transform 0.2s;
         }
 
         .brawler-card.unlocked {
             filter: grayscale(0%);
             opacity: 1;
             background: linear-gradient(135deg, #3d1b63 0%, #140724 100%);
+        }
+
+        .brawler-card.unlocked:hover {
+            transform: scale(1.05) rotate(1deg);
         }
 
         /* Rarity Borders */
@@ -157,28 +168,68 @@
             font-size: 0.8rem;
         }
 
-        /* Rewards Screen overlay */
+        /* ANIMATION OVERLAY SYSTEM */
         .overlay {
             display: none;
             position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.9);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 2, 15, 0.95);
             z-index: 100;
             justify-content: center;
             align-items: center;
             flex-direction: column;
         }
 
-        .reward-box {
-            font-size: 2.5rem;
-            text-shadow: 4px 4px 0px #000;
-            animation: popIn 0.3s ease-out;
-            text-align: center;
+        /* The Box/Starr Drop Tap Target */
+        .tap-target {
+            font-size: 7rem;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: transform 0.1s;
+            position: relative;
         }
 
-        @keyframes popIn {
-            0% { transform: scale(0.5); }
-            100% { transform: scale(1); }
+        /* Shaking animation when tapped */
+        .shake-anim {
+            animation: shake 0.2s ease-in-out infinite;
+        }
+
+        /* Upgrade Flash Animations */
+        .flash-rare { animation: flashGlow 0.3s ease-out; background: var(--rare-color) !important; border-radius: 50%; }
+        .flash-super-rare { animation: flashGlow 0.3s ease-out; background: var(--super-rare-color) !important; border-radius: 50%; }
+        .flash-epic { animation: flashGlow 0.3s ease-out; background: var(--epic-color) !important; border-radius: 50%; }
+        .flash-mythic { animation: flashGlow 0.3s ease-out; background: var(--mythic-color) !important; border-radius: 50%; }
+        .flash-legendary { animation: flashGlow 0.3s ease-out; background: var(--legendary-color) !important; border-radius: 50%; }
+
+        /* Reward Pop Up */
+        .reward-box {
+            display: none;
+            font-size: 2.5rem;
+            text-shadow: 4px 4px 0px #000;
+            text-align: center;
+            animation: burstPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* KEYFRAMES */
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-8px, 5px) rotate(-3deg); }
+            40% { transform: translate(6px, -5px) rotate(3deg); }
+            60% { transform: translate(-5px, 2px) rotate(-1deg); }
+            80% { transform: translate(5px, 5px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        @keyframes flashGlow {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.3); filter: brightness(2); box-shadow: 0 0 50px #fff; }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
+        @keyframes burstPop {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); }
         }
 
         .upgrade-btn {
@@ -197,8 +248,8 @@
 <body>
 
     <div class="top-bar">
-        <div class="resource-item" style="color: var(--bs-yellow);">🪙 <span id="coins">1000</span></div>
-        <div class="resource-item" style="color: #ff66cc;">⚡ <span id="powerPoints">200</span></div>
+        <div class="resource-item" style="color: var(--bs-yellow);">🪙 <span id="coins">2000</span></div>
+        <div class="resource-item" style="color: #ff66cc;">⚡ <span id="powerPoints">500</span></div>
         <div class="resource-item" style="color: #00ccff;">🏆 <span id="unlockedCount">1</span>/107</div>
     </div>
 
@@ -242,9 +293,10 @@
         <div class="brawlers-grid" id="brawlersGrid"></div>
     </div>
 
-    <div class="overlay" id="rewardOverlay" onclick="closeOverlay()">
-        <div class="reward-box" id="rewardContent"></div>
-        <p style="color: #888; margin-top: 30px;">Tap anywhere to dismiss</p>
+    <div class="overlay" id="rewardOverlay">
+        <div class="tap-target" id="animatedObject" onclick="handleTap()">📦</div>
+        <div class="reward-box" id="rewardContent" onclick="closeOverlay()"></div>
+        <p id="tapPrompt" style="color: #ffcc00; font-size: 1.2rem; margin-top: 30px;">TAP TO OPEN!</p>
     </div>
 
 <script>
@@ -255,7 +307,17 @@
     // Configuration for dynamic generation of all 107 slots
     const rarities = ["Rare", "Super-Rare", "Epic", "Mythic", "Legendary"];
     
-    // Generate 107 standardized mock Brawlers dynamically to fulfill the complete requirement
+    // Animation tracking state
+    let animationState = {
+        currentType: '', // 'box' or 'drop'
+        tapCount: 0,
+        maxTaps: 3,
+        finalRewardHTML: '',
+        dropRarities: ['Rare', 'Super-Rare', 'Epic', 'Mythic', 'Legendary'],
+        currentDropTier: 0
+    };
+
+    // Generate 107 standardized Brawlers dynamically
     function generateAllBrawlers() {
         // Starting Brawler
         brawlers.push({ id: "shelly", name: "Shelly", unlocked: true, level: 1, rarity: "Rare" });
@@ -291,79 +353,122 @@
         event.currentTarget.classList.add('active');
     }
 
-    // Box Open Rules
+    // Prepare Box Opener
     function openBox(boxType) {
-        let multiplier = 1;
-        if (boxType === 'Big Box') multiplier = 3;
-        if (boxType === 'Mega Box') multiplier = 10;
-        if (boxType === 'Omega Box') multiplier = 20;
+        animationState.currentType = 'box';
+        animationState.tapCount = 0;
+        animationState.maxTaps = boxType === 'Brawl Box' ? 2 : boxType === 'Big Box' ? 3 : 5;
+        
+        let obj = document.getElementById('animatedObject');
+        obj.innerText = '📦';
+        obj.style.display = 'block';
+        document.getElementById('rewardContent').style.display = 'none';
+        document.getElementById('tapPrompt').innerText = 'TAP TO CRACK BOX!';
+        document.getElementById('rewardOverlay').style.display = 'flex';
 
+        // Pre-calculate items inside
+        let multiplier = boxType === 'Big Box' ? 3 : boxType === 'Mega Box' ? 10 : boxType === 'Omega Box' ? 20 : 1;
         let coinGain = (Math.floor(Math.random() * 50) + 30) * multiplier;
         let ppGain = (Math.floor(Math.random() * 20) + 10) * multiplier;
-
         resources.coins += coinGain;
         resources.powerPoints += ppGain;
 
-        let content = `<div style="color:var(--bs-yellow)">${boxType}</div>`;
-        content += `<div style="font-size: 1.8rem;">+🪙 ${coinGain}<br>+⚡ ${ppGain}</div>`;
+        let content = `<div style="color:var(--bs-yellow)">${boxType} Opened!</div>`;
+        content += `<div style="font-size: 1.8rem; margin: 15px 0;">+🪙 ${coinGain}<br>+⚡ ${ppGain}</div>`;
 
-        // Unlock roll
-        let luckThreshold = 0.05 * multiplier; 
-        if (Math.random() < luckThreshold) {
+        if (Math.random() < (0.05 * multiplier)) {
             let locked = brawlers.filter(b => !b.unlocked);
             if (locked.length > 0) {
                 let picked = locked[Math.floor(Math.random() * locked.length)];
                 picked.unlocked = true;
-                content += `<br><div style="color:var(--legendary-color); font-size: 2rem;">🎉 UNLOCKED ${picked.name}!</div>`;
+                content += `<div style="color:var(--legendary-color); font-size: 2rem; animation: burstPop 0.5s ease-out;">🎉 UNLOCKED: ${picked.name}! 🎉</div>`;
             }
         }
-
-        showOverlay(content);
+        animationState.finalRewardHTML = content;
     }
 
-    // Starr Drop Upgrading System
+    // Prepare Starr Drop Opener
     function openStarrDrop() {
-        let roll = Math.random();
-        let dropTier = "Rare";
-        let color = "var(--rare-color)";
-        let coins = 50, pp = 20;
+        animationState.currentType = 'drop';
+        animationState.currentDropTier = 0; 
+        animationState.maxTaps = Math.floor(Math.random() * 4) + 1; // Random reward depth
+        
+        let obj = document.getElementById('animatedObject');
+        obj.innerText = '⭐';
+        obj.style.display = 'block';
+        obj.className = "tap-target"; 
+        document.getElementById('rewardContent').style.display = 'none';
+        document.getElementById('tapPrompt').innerText = 'TAP TO UPGRADE STARR DROP!';
+        document.getElementById('rewardOverlay').style.display = 'flex';
 
-        if (roll > 0.95) { 
-            dropTier = "Legendary"; color = "var(--legendary-color)"; coins = 500; pp = 200;
-        } else if (roll > 0.85) { 
-            dropTier = "Mythic"; color = "var(--mythic-color)"; coins = 200; pp = 100;
-        } else if (roll > 0.65) { 
-            dropTier = "Epic"; color = "var(--epic-color)"; coins = 100; pp = 50;
-        } else if (roll > 0.35) { 
-            dropTier = "Super-Rare"; color = "var(--super-rare-color)"; coins = 75; pp = 30;
-        }
+        let finalTier = animationState.dropRarities[Math.min(animationState.maxTaps, 4)];
+        let color = `var(--${finalTier.toLowerCase()}-color)`;
+        let coins = 50 * (animationState.maxTaps + 1);
+        let pp = 20 * (animationState.maxTaps + 1);
 
         resources.coins += coins;
         resources.powerPoints += pp;
 
-        let content = `<div style="color:${color}; font-size: 3rem;">⚡ ${dropTier} Starr Drop ⚡</div>`;
+        let content = `<div style="color:${color}; font-size: 3rem;">⚡ ${finalTier} Starr Drop ⚡</div>`;
         content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 ${coins}<br>+⚡ ${pp}</div>`;
 
-        if (dropTier === "Legendary" && Math.random() < 0.4) {
+        if (finalTier === "Legendary" || (finalTier === "Mythic" && Math.random() < 0.5)) {
             let locked = brawlers.filter(b => !b.unlocked);
             if (locked.length > 0) {
                 let picked = locked[Math.floor(Math.random() * locked.length)];
                 picked.unlocked = true;
-                content += `<br><div style="color:var(--bs-yellow)">✨ BRAWLER: ${picked.name}! ✨</div>`;
+                content += `<br><div style="color:var(--bs-yellow)">✨ NEW BRAWLER: ${picked.name}! ✨</div>`;
             }
         }
-
-        showOverlay(content);
+        animationState.finalRewardHTML = content;
     }
 
-    function showOverlay(htmlContent) {
-        document.getElementById('rewardContent').innerHTML = htmlContent;
-        document.getElementById('rewardOverlay').style.display = 'flex';
+    // Handle dynamic clicks on items
+    function handleTap() {
+        let obj = document.getElementById('animatedObject');
+        
+        // Active visual bump animation
+        obj.classList.add('shake-anim');
+        setTimeout(() => obj.classList.remove('shake-anim'), 200);
+
+        if (animationState.currentType === 'box') {
+            animationState.tapCount++;
+            if (animationState.tapCount >= animationState.maxTaps) {
+                revealRewards();
+            } else {
+                document.getElementById('tapPrompt').innerText = `${animationState.maxTaps - animationState.tapCount} Taps remaining...`;
+            }
+        } 
+        else if (animationState.currentType === 'drop') {
+            animationState.tapCount++;
+            animationState.currentDropTier = Math.min(animationState.tapCount, 4);
+            let tierName = animationState.dropRarities[animationState.currentDropTier];
+            
+            // Trigger temporary visual upgrade frame flashes
+            obj.className = `tap-target flash-${tierName.toLowerCase()}`;
+            setTimeout(() => { obj.className = "tap-target"; }, 300);
+
+            if (animationState.tapCount >= animationState.maxTaps) {
+                revealRewards();
+            }
+        }
+    }
+
+    function revealRewards() {
+        document.getElementById('animatedObject').style.display = 'none';
+        
+        let rewardBox = document.getElementById('rewardContent');
+        rewardBox.innerHTML = animationState.finalRewardHTML;
+        rewardBox.style.display = 'block';
+        
+        document.getElementById('tapPrompt').innerText = 'Tap rewards to exit';
         updateUI();
     }
 
     function closeOverlay() {
-        document.getElementById('rewardOverlay').style.display = 'none';
+        if (document.getElementById('rewardContent').style.display === 'block') {
+            document.getElementById('rewardOverlay').style.display = 'none';
+        }
     }
 
     function upgradeBrawler(index) {
@@ -408,7 +513,7 @@
         });
     }
 
-    // Start Game Initialization
+    // App Startup Entry point
     generateAllBrawlers();
     updateUI();
 </script>
