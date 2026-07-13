@@ -10,10 +10,10 @@
             --bs-purple: #4c1c5c;
             --bs-yellow: #ffcc00;
             --bs-dark: #11141a;
-            --rare-color: #00ff66;
-            --super-rare-color: #00ccff;
-            --epic-color: #d633ff;
-            --mythic-color: #ff3333;
+            --rare-color: #3bf12a;
+            --superrare-color: #27b6ff;
+            --epic-color: #cb3bf5;
+            --mythic-color: #ff3c3c;
             --legendary-color: #ffcc00;
         }
 
@@ -140,9 +140,9 @@
             transform: scale(1.05) rotate(1deg);
         }
 
-        /* Rarity Borders */
+        /* Actual Rarity Borders */
         .rarity-Rare { border-color: var(--rare-color); }
-        .rarity-Super-Rare { border-color: var(--super-rare-color); }
+        .rarity-Super-Rare { border-color: var(--superrare-color); }
         .rarity-Epic { border-color: var(--epic-color); }
         .rarity-Mythic { border-color: var(--mythic-color); }
         .rarity-Legendary { border-color: var(--legendary-color); }
@@ -265,23 +265,23 @@
         <h2>Trophy Boxes</h2>
         <div class="shop-grid">
             <div class="shop-card" onclick="openBox('Small Trophy Box')">
-                <h3 style="color: #00ccff;">Small Trophy Box</h3>
+                <h3 style="color: var(--rare-color);">Small Trophy Box</h3>
                 <p>Contains 4 item drops</p>
             </div>
             <div class="shop-card" onclick="openBox('Big Trophy Box')">
-                <h3 style="color: #ff3399;">Big Trophy Box</h3>
+                <h3 style="color: var(--superrare-color);">Big Trophy Box</h3>
                 <p>Contains 8 item drops</p>
             </div>
             <div class="shop-card" onclick="openBox('Mega Trophy Box')">
-                <h3 style="color: var(--bs-yellow);">Mega Trophy Box</h3>
+                <h3 style="color: var(--epic-color);">Mega Trophy Box</h3>
                 <p>Contains 12 item drops</p>
             </div>
             <div class="shop-card" onclick="openBox('Omega Trophy Box')">
-                <h3 style="color: #ff3333;">Omega Trophy Box</h3>
+                <h3 style="color: var(--mythic-color);">Omega Trophy Box</h3>
                 <p>Contains 16 items & guaranteed cosmetics</p>
             </div>
-            <div class="shop-card" style="background: linear-gradient(180deg, #ff33cc 0%, #3d1b63 100%);" onclick="openBox('Ultra Trophy Box')">
-                <h3 style="color: #fff; text-shadow: 0 0 10px #ff33cc;">Ultra Trophy Box</h3>
+            <div class="shop-card" style="background: linear-gradient(180deg, #ffcc00 0%, #3d1b63 100%);" onclick="openBox('Ultra Trophy Box')">
+                <h3 style="color: #fff; text-shadow: 0 0 10px var(--legendary-color);">Ultra Trophy Box</h3>
                 <p>Contains 20 items & Hypercharge Skin Chance!</p>
             </div>
         </div>
@@ -320,6 +320,7 @@
         "Legendary": "https://static.wikia.nocookie.net/brawlstars/images/d/d3/Starr_Drop_Legendary.png"
     };
 
+    // Official Rarity Progression Sequence
     const rarities = ["Rare", "Super-Rare", "Epic", "Mythic", "Legendary"];
     
     let animationState = {
@@ -332,7 +333,9 @@
     };
 
     function generateAllBrawlers() {
+        // First brawler baseline
         brawlers.push({ id: "shelly", name: "Shelly", unlocked: true, level: 1, rarity: "Rare" });
+        
         let namesPool = ["Colt", "Brock", "El Primo", "Poco", "Barley", "Rosa", "Bull", "Jessie", "Dynamike", "Tick", "8-Bit", "Rico", "Darryl", "Penny", "Carl", "Jacky", "Gus", "Piper", "Pam", "Frank", "Bibi", "Bea", "Nani", "Edgar", "Griff", "Grom", "Bonnie", "Gale", "Colette", "Lou", "Kit", "Melodie", "Angelo", "Draco", "Lily", "Clancy", "Moe", "Kenji", "Juju", "Chaxie"];
 
         for (let i = 2; i <= 107; i++) {
@@ -342,7 +345,7 @@
                 name: `${baseName} V${Math.ceil(i / namesPool.length)}`,
                 unlocked: false,
                 level: 1,
-                rarity: rarities[Math.floor(Math.random() * rarities.length)]
+                rarity: rarities[Math.floor(Math.random() * rarities.length)] // Distributed among the 5 accurate tiers
             });
         }
     }
@@ -354,7 +357,6 @@
         event.currentTarget.classList.add('active');
     }
 
-    // New Trophy Box Opening Math based on your criteria
     function openBox(boxType) {
         animationState.currentType = 'box';
         animationState.tapCount = 0;
@@ -383,20 +385,21 @@
         content += `<div style="font-size: 1.8rem; margin: 15px 0;">Drops processed: ${totalDrops}<br>+🪙 ${coinGain}<br>+⚡ ${ppGain}</div>`;
 
         if (boxType === 'Omega Trophy Box') {
-            content += `<div style="color:#ff3399; font-size: 1.6rem;">🎭 Guaranteed Epic Skin Cosmetic Added!</div>`;
+            content += `<div style="color:var(--epic-color); font-size: 1.6rem;">🎭 Guaranteed Epic Skin Cosmetic Added!</div>`;
         }
 
         if (boxType === 'Ultra Trophy Box' && Math.random() < 0.25) {
-            content += `<div style="color:#ff33cc; font-size: 1.8rem; text-shadow: 0 0 10px #ff33cc;">⚡ PULLED ULTRA EXCLUSIVE HYPERCHARGE SKIN! ⚡</div>`;
+            content += `<div style="color:var(--legendary-color); font-size: 1.8rem; text-shadow: 0 0 10px #ff33cc;">⚡ PULLED ULTRA EXCLUSIVE HYPERCHARGE SKIN! ⚡</div>`;
         }
 
-        // Brawler pull calculation
+        // Drop pull logic rate based on capacity size
         if (Math.random() < (0.01 * totalDrops)) {
             let locked = brawlers.filter(b => !b.unlocked);
             if (locked.length > 0) {
                 let picked = locked[Math.floor(Math.random() * locked.length)];
                 picked.unlocked = true;
-                content += `<div style="color:var(--legendary-color); font-size: 2rem; margin-top:10px;">🎉 UNLOCKED BRAWLER: ${picked.name}!</div>`;
+                let rarityClass = picked.rarity.toLowerCase().replace('-', '');
+                content += `<div style="color:var(--${rarityClass}-color); font-size: 2rem; margin-top:10px;">🎉 UNLOCKED ${picked.rarity.toUpperCase()}: ${picked.name}!</div>`;
             }
         }
         animationState.finalRewardHTML = content;
@@ -408,7 +411,6 @@
         animationState.maxTaps = Math.floor(Math.random() * 4) + 1; 
         
         let obj = document.getElementById('animatedObject');
-        // Start on baseline Rare tier image asset
         obj.innerHTML = `<img src="${dropImages['Rare']}" alt="Starr Drop">`;
         obj.style.display = 'block';
         obj.className = "tap-target"; 
@@ -417,7 +419,8 @@
         document.getElementById('rewardOverlay').style.display = 'flex';
 
         let finalTier = animationState.dropRarities[Math.min(animationState.maxTaps, 4)];
-        let color = `var(--${finalTier.toLowerCase()}-color)`;
+        let rarityClass = finalTier.toLowerCase().replace('-', '');
+        let color = `var(--${rarityClass}-color)`;
         let coins = 60 * (animationState.maxTaps + 1);
         let pp = 25 * (animationState.maxTaps + 1);
 
@@ -455,10 +458,10 @@
             animationState.tapCount++;
             animationState.currentDropTier = Math.min(animationState.tapCount, 4);
             let tierName = animationState.dropRarities[animationState.currentDropTier];
+            let rarityClass = tierName.toLowerCase().replace('-', '');
             
-            // Swap image source out instantly to reflect the upgraded tier visual look
             obj.innerHTML = `<img src="${dropImages[tierName]}" alt="${tierName} Drop">`;
-            obj.className = `tap-target flash-${tierName.toLowerCase()}`;
+            obj.className = `tap-target flash-${rarityClass}`;
             setTimeout(() => { obj.className = "tap-target"; }, 300);
 
             if (animationState.tapCount >= animationState.maxTaps) {
@@ -503,9 +506,12 @@
 
         brawlers.forEach((b, index) => {
             let card = document.createElement('div');
+            let rarityClass = b.rarity.toLowerCase().replace(' ', '');
             card.className = `brawler-card ${b.unlocked ? 'unlocked' : ''} rarity-${b.rarity}`;
+            
+            let displayColor = b.rarity.toLowerCase().replace('-', '');
             card.innerHTML = `
-                <div class="brawler-badge" style="color:var(--${b.rarity.toLowerCase()}-color)">${b.rarity}</div>
+                <div class="brawler-badge" style="color:var(--${displayColor}-color)">${b.rarity}</div>
                 <div style="height: 50px; font-size: 2rem; margin-top:15px;">👤</div>
                 <div class="brawler-name">${b.name}</div>
                 <div>Lvl: ${b.unlocked ? b.level : 'Locked'}</div>
@@ -525,4 +531,4 @@
     updateUI();
 </script>
 </body>
-</html>
+</html>7
