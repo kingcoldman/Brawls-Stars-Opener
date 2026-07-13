@@ -1,0 +1,175 @@
+/* style.css */
+:root {
+    --common: #b1b1b1;
+    --rare: #46e246;
+    --super-rare: #3ca0ff;
+    --epic: #d84eff;
+    --mythic: #ff4e70;
+    --legendary: #fff14e;
+    --gadget: #00e5ff;
+    --star-power: #ffc107;
+    --hypercharge: #cc00ff;
+}
+
+body {
+    background-color: #0d1527;
+    color: white;
+    font-family: 'Arial Black', sans-serif;
+    margin: 0;
+    padding: 10px;
+}
+
+.game-wrapper {
+    max-width: 800px;
+    margin: auto;
+}
+
+.dashboard {
+    background: #152444;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.user-stats {
+    display: flex;
+    justify-content: space-around;
+    font-size: 18px;
+}
+
+.pill {
+    background: #090e18;
+    padding: 6px 15px;
+    border-radius: 15px;
+    border: 1px solid #3c548c;
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.shop-box {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    border: 3px solid black;
+    box-shadow: 0 4px 0 #000;
+}
+
+.shop-box:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+.brawl { background: linear-gradient(#3ca0ff, #1d72c2); }
+.big { background: linear-gradient(#ff4e70, #b81d3d); }
+.mega { background: linear-gradient(#ffdd00, #d48800); color: black; }
+
+.battle-arena {
+    background: #1a2c54;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border: 2px dashed #f4b41a;
+}
+
+.brawl-btn {
+    background: #46e246;
+    border: none;
+    padding: 10px 25px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.roster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+}
+
+.brawler-card {
+    background: #152444;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    border: 2px solid #2a3c60;
+    opacity: 0.5;
+}
+
+.brawler-card.active {
+    opacity: 1;
+    border-color: #f4b41a;
+}
+
+.brawler-card img {
+    width: 65px;
+    height: 65px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.bar-container {
+    background-color: #000;
+    border-radius: 10px;
+    height: 14px;
+    position: relative;
+    overflow: hidden;
+    margin: 5px 0;
+}
+
+.bar-fill {
+    background-color: #ff9f43;
+    height: 100%;
+    width: 0;
+}
+
+.bar-text {
+    position: absolute;
+    width: 100%;
+    font-size: 9px;
+    left: 0; top: 1px;
+}
+
+.up-btn {
+    background: #46e246;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+/* Fullscreen Tap Overlay styling */
+.fullscreen-overlay {
+    display: none;
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.reward-card {
+    text-align: center;
+}
+
+.items-counter {
+    background: red;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+    position: absolute;
+    bottom: 10%;
+}
