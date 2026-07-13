@@ -81,7 +81,7 @@
             display: block;
         }
 
-        /* Menu / Shop Style Grid */
+        /* Shop Grid */
         .shop-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -140,7 +140,7 @@
             transform: scale(1.05) rotate(1deg);
         }
 
-        /* Actual Rarity Borders */
+        /* Actual Rarity Colors matched on border classes */
         .rarity-Rare { border-color: var(--rare-color); }
         .rarity-Super-Rare { border-color: var(--superrare-color); }
         .rarity-Epic { border-color: var(--epic-color); }
@@ -175,7 +175,6 @@
             flex-direction: column;
         }
 
-        /* Animated Asset Container */
         .tap-target {
             cursor: pointer;
             margin-bottom: 20px;
@@ -183,26 +182,31 @@
         }
 
         .tap-target img {
-            width: 180px;
-            height: 180px;
+            width: 220px;
+            height: 220px;
             object-fit: contain;
         }
 
         .box-emoji {
             font-size: 7rem;
+            display: inline-block;
         }
 
-        /* Shaking animation when tapped */
+        /* Continuous rotation and bounce style mimicking real game physics */
+        .starr-spin-idle {
+            animation: floatAndRotate 3s ease-in-out infinite;
+        }
+
         .shake-anim {
-            animation: shake 0.2s ease-in-out infinite;
+            animation: shake 0.2s ease-in-out;
         }
 
-        /* Upgrade Flash Animations for Starr Drops */
-        .flash-rare { animation: flashGlow 0.3s ease-out; }
-        .flash-super-rare { animation: flashGlow 0.3s ease-out; }
-        .flash-epic { animation: flashGlow 0.3s ease-out; }
-        .flash-mythic { animation: flashGlow 0.3s ease-out; }
-        .flash-legendary { animation: flashGlow 0.3s ease-out; }
+        /* Upgrade Flash Keyframes */
+        .flash-rare { animation: flashGlowRare 0.3s ease-out; }
+        .flash-superrare { animation: flashGlowSuper 0.3s ease-out; }
+        .flash-epic { animation: flashGlowEpic 0.3s ease-out; }
+        .flash-mythic { animation: flashGlowMythic 0.3s ease-out; }
+        .flash-legendary { animation: flashGlowLegendary 0.3s ease-out; }
 
         /* Reward Pop Up */
         .reward-box {
@@ -214,18 +218,42 @@
         }
 
         /* KEYFRAMES */
-        @keyframes shake {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            20% { transform: translate(-8px, 5px) rotate(-3deg); }
-            40% { transform: translate(6px, -5px) rotate(3deg); }
-            60% { transform: translate(-5px, 2px) rotate(-1deg); }
-            80% { transform: translate(5px, 5px) rotate(2deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
+        @keyframes floatAndRotate {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
         }
 
-        @keyframes flashGlow {
+        @keyframes shake {
+            0% { transform: scale(1) rotate(0deg); }
+            20% { transform: scale(0.9) rotate(-8deg); }
+            60% { transform: scale(1.15) rotate(8deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        @keyframes flashGlowRare {
             0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.3); filter: brightness(1.8) drop-shadow(0 0 30px #fff); }
+            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--rare-color)); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+        @keyframes flashGlowSuper {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--superrare-color)); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+        @keyframes flashGlowEpic {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--epic-color)); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+        @keyframes flashGlowMythic {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--mythic-color)); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+        @keyframes flashGlowLegendary {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.4); filter: brightness(1.6) drop-shadow(0 0 40px var(--legendary-color)); }
             100% { transform: scale(1); filter: brightness(1); }
         }
 
@@ -290,7 +318,7 @@
         <div class="shop-grid">
             <div class="shop-card" style="background: linear-gradient(180deg, #1f1235 0%, #4c1c5c 100%);" onclick="openStarrDrop()">
                 <h3 style="color: #fff;">Tap to Roll Starr Drop</h3>
-                <p>Authentic Upgrading Images!</p>
+                <p>Authentic 4-Tap Upgrade System!</p>
             </div>
         </div>
     </div>
@@ -301,41 +329,37 @@
     </div>
 
     <div class="overlay" id="rewardOverlay">
-        <div class="tap-target" id="animatedObject" onclick="handleTap()"></div>
+        <div class="tap-target starr-spin-idle" id="animatedObject" onclick="handleTap()"></div>
         <div class="reward-box" id="rewardContent" onclick="closeOverlay()"></div>
         <p id="tapPrompt" style="color: #ffcc00; font-size: 1.2rem; margin-top: 30px;">TAP TO OPEN!</p>
     </div>
 
 <script>
-    // Game State
     let resources = { coins: 5000, powerPoints: 1000 };
     let brawlers = [];
 
-    // Official Starr Drop Wiki Asset Links
+    // Real Wiki Starr Drop Image Links
     const dropImages = {
         "Rare": "https://static.wikia.nocookie.net/brawlstars/images/e/e6/Starr_Drop_Rare.png",
-        "Super-Rare": "https://static.wikia.nocookie.net/brawlstars/images/0/00/Starr_Drop_Super_Rare.png",
+        "Super Rare": "https://static.wikia.nocookie.net/brawlstars/images/0/00/Starr_Drop_Super_Rare.png",
         "Epic": "https://static.wikia.nocookie.net/brawlstars/images/9/9b/Starr_Drop_Epic.png",
         "Mythic": "https://static.wikia.nocookie.net/brawlstars/images/0/01/Starr_Drop_Mythic.png",
         "Legendary": "https://static.wikia.nocookie.net/brawlstars/images/d/d3/Starr_Drop_Legendary.png"
     };
 
-    // Official Rarity Progression Sequence
-    const rarities = ["Rare", "Super-Rare", "Epic", "Mythic", "Legendary"];
+    // Correct Rarity Sequence Match
+    const rarities = ["Rare", "Super Rare", "Epic", "Mythic", "Legendary"];
     
     let animationState = {
         currentType: '', 
         tapCount: 0,
-        maxTaps: 3,
-        finalRewardHTML: '',
-        dropRarities: ['Rare', 'Super-Rare', 'Epic', 'Mythic', 'Legendary'],
-        currentDropTier: 0
+        maxTaps: 4, 
+        currentTierIndex: 0, 
+        finalRewardHTML: ''
     };
 
     function generateAllBrawlers() {
-        // First brawler baseline
         brawlers.push({ id: "shelly", name: "Shelly", unlocked: true, level: 1, rarity: "Rare" });
-        
         let namesPool = ["Colt", "Brock", "El Primo", "Poco", "Barley", "Rosa", "Bull", "Jessie", "Dynamike", "Tick", "8-Bit", "Rico", "Darryl", "Penny", "Carl", "Jacky", "Gus", "Piper", "Pam", "Frank", "Bibi", "Bea", "Nani", "Edgar", "Griff", "Grom", "Bonnie", "Gale", "Colette", "Lou", "Kit", "Melodie", "Angelo", "Draco", "Lily", "Clancy", "Moe", "Kenji", "Juju", "Chaxie"];
 
         for (let i = 2; i <= 107; i++) {
@@ -345,7 +369,7 @@
                 name: `${baseName} V${Math.ceil(i / namesPool.length)}`,
                 unlocked: false,
                 level: 1,
-                rarity: rarities[Math.floor(Math.random() * rarities.length)] // Distributed among the 5 accurate tiers
+                rarity: rarities[Math.floor(Math.random() * rarities.length)]
             });
         }
     }
@@ -371,6 +395,7 @@
         
         let obj = document.getElementById('animatedObject');
         obj.innerHTML = '<span class="box-emoji">📦</span>';
+        obj.className = "tap-target";
         obj.style.display = 'block';
         document.getElementById('rewardContent').style.display = 'none';
         document.getElementById('tapPrompt').innerText = `TAP TO CRACK ${boxType.toUpperCase()}!`;
@@ -387,19 +412,17 @@
         if (boxType === 'Omega Trophy Box') {
             content += `<div style="color:var(--epic-color); font-size: 1.6rem;">🎭 Guaranteed Epic Skin Cosmetic Added!</div>`;
         }
-
         if (boxType === 'Ultra Trophy Box' && Math.random() < 0.25) {
             content += `<div style="color:var(--legendary-color); font-size: 1.8rem; text-shadow: 0 0 10px #ff33cc;">⚡ PULLED ULTRA EXCLUSIVE HYPERCHARGE SKIN! ⚡</div>`;
         }
 
-        // Drop pull logic rate based on capacity size
         if (Math.random() < (0.01 * totalDrops)) {
             let locked = brawlers.filter(b => !b.unlocked);
             if (locked.length > 0) {
                 let picked = locked[Math.floor(Math.random() * locked.length)];
                 picked.unlocked = true;
-                let rarityClass = picked.rarity.toLowerCase().replace('-', '');
-                content += `<div style="color:var(--${rarityClass}-color); font-size: 2rem; margin-top:10px;">🎉 UNLOCKED ${picked.rarity.toUpperCase()}: ${picked.name}!</div>`;
+                let normalized = picked.rarity.toLowerCase().replace(' ', '');
+                content += `<div style="color:var(--${normalized}-color); font-size: 2rem; margin-top:10px;">🎉 UNLOCKED ${picked.rarity.toUpperCase()}: ${picked.name}!</div>`;
             }
         }
         animationState.finalRewardHTML = content;
@@ -407,22 +430,27 @@
 
     function openStarrDrop() {
         animationState.currentType = 'drop';
-        animationState.currentDropTier = 0; 
-        animationState.maxTaps = Math.floor(Math.random() * 4) + 1; 
+        animationState.tapCount = 0;
+        animationState.currentTierIndex = 0; // Always start at index 0 (Rare)
+        animationState.maxTaps = 4; // Absolute 4 active taps sequence
         
         let obj = document.getElementById('animatedObject');
         obj.innerHTML = `<img src="${dropImages['Rare']}" alt="Starr Drop">`;
         obj.style.display = 'block';
-        obj.className = "tap-target"; 
+        obj.className = "tap-target starr-spin-idle"; 
         document.getElementById('rewardContent').style.display = 'none';
-        document.getElementById('tapPrompt').innerText = 'TAP TO UPGRADE!';
+        document.getElementById('tapPrompt').innerText = '4 TAPS REMAINING...';
         document.getElementById('rewardOverlay').style.display = 'flex';
+    }
 
-        let finalTier = animationState.dropRarities[Math.min(animationState.maxTaps, 4)];
-        let rarityClass = finalTier.toLowerCase().replace('-', '');
-        let color = `var(--${rarityClass}-color)`;
-        let coins = 60 * (animationState.maxTaps + 1);
-        let pp = 25 * (animationState.maxTaps + 1);
+    function processFinalStarrDropLoot() {
+        let finalTier = rarities[animationState.currentTierIndex];
+        let normalized = finalTier.toLowerCase().replace(' ', '');
+        let color = `var(--${normalized}-color)`;
+        
+        let multiplier = animationState.currentTierIndex + 1;
+        let coins = 60 * multiplier;
+        let pp = 25 * multiplier;
 
         resources.coins += coins;
         resources.powerPoints += pp;
@@ -430,7 +458,9 @@
         let content = `<div style="color:${color}; font-size: 3rem;">⚡ ${finalTier} Starr Drop ⚡</div>`;
         content += `<div style="font-size: 1.8rem; margin-top:10px;">+🪙 ${coins}<br>+⚡ ${pp}</div>`;
 
-        if (finalTier === "Legendary" || (finalTier === "Mythic" && Math.random() < 0.4)) {
+        // Accurate probability check based on final tier reached
+        let dropChance = finalTier === "Legendary" ? 0.8 : finalTier === "Mythic" ? 0.3 : finalTier === "Epic" ? 0.1 : 0.02;
+        if (Math.random() < dropChance) {
             let locked = brawlers.filter(b => !b.unlocked);
             if (locked.length > 0) {
                 let picked = locked[Math.floor(Math.random() * locked.length)];
@@ -439,10 +469,13 @@
             }
         }
         animationState.finalRewardHTML = content;
+        revealRewards();
     }
 
     function handleTap() {
         let obj = document.getElementById('animatedObject');
+        
+        // Physical active tap response layout frame update
         obj.classList.add('shake-anim');
         setTimeout(() => obj.classList.remove('shake-anim'), 200);
 
@@ -456,16 +489,23 @@
         } 
         else if (animationState.currentType === 'drop') {
             animationState.tapCount++;
-            animationState.currentDropTier = Math.min(animationState.tapCount, 4);
-            let tierName = animationState.dropRarities[animationState.currentDropTier];
-            let rarityClass = tierName.toLowerCase().replace('-', '');
             
-            obj.innerHTML = `<img src="${dropImages[tierName]}" alt="${tierName} Drop">`;
-            obj.className = `tap-target flash-${rarityClass}`;
-            setTimeout(() => { obj.className = "tap-target"; }, 300);
+            // Real progression math: check upgrade on each tap up to legendary threshold
+            if (animationState.currentTierIndex < 4 && Math.random() < 0.45) {
+                animationState.currentTierIndex++;
+                let currentTierName = rarities[animationState.currentTierIndex];
+                let normalized = currentTierName.toLowerCase().replace(' ', '');
+                
+                // Swap texture target source instantly
+                obj.innerHTML = `<img src="${dropImages[currentTierName]}" alt="${currentTierName} Drop">`;
+                obj.className = `tap-target starr-spin-idle flash-${normalized}`;
+                setTimeout(() => { obj.className = "tap-target starr-spin-idle"; }, 300);
+            }
 
             if (animationState.tapCount >= animationState.maxTaps) {
-                revealRewards();
+                processFinalStarrDropLoot();
+            } else {
+                document.getElementById('tapPrompt').innerText = `${animationState.maxTaps - animationState.tapCount} Taps remaining...`;
             }
         }
     }
@@ -506,10 +546,11 @@
 
         brawlers.forEach((b, index) => {
             let card = document.createElement('div');
-            let rarityClass = b.rarity.toLowerCase().replace(' ', '');
-            card.className = `brawler-card ${b.unlocked ? 'unlocked' : ''} rarity-${b.rarity}`;
+            let normalized = b.rarity.toLowerCase().replace(' ', '-');
+            card.className = `brawler-card ${b.unlocked ? 'unlocked' : ''} rarity-${normalized}`;
             
-            let displayColor = b.rarity.toLowerCase().replace('-', '');
+            let displayColor = b.rarity.toLowerCase().replace(' ', '');
+            grid.appendChild(card);
             card.innerHTML = `
                 <div class="brawler-badge" style="color:var(--${displayColor}-color)">${b.rarity}</div>
                 <div style="height: 50px; font-size: 2rem; margin-top:15px;">👤</div>
@@ -523,7 +564,6 @@
             } else if (b.unlocked && b.level >= 11) {
                 card.innerHTML += `<div style="color:var(--bs-yellow); font-size:0.9rem; margin-top:5px;">MAXED</div>`;
             }
-            grid.appendChild(card);
         });
     }
 
@@ -531,4 +571,4 @@
     updateUI();
 </script>
 </body>
-</html>7
+</html>
