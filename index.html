@@ -3,261 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Box Simulator for BS</title>
+    <title>Box Simulator For Brawl Stars - Play Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="game-wrapper">
-    <header class="dashboard">
-        <div class="user-stats">
-            <span class="pill">💰 <span id="gold-val">1000</span></span>
-            <span class="pill">💎 <span id="gem-val">150</span></span>
-            <span class="pill">🏆 <span id="trophy-val">0</span></span>
-        </div>
-        <h1>BOX SIMULATOR</h1>
-    </header>
+<div class="app-container">
+    <div class="top-bar">
+        <div class="currency-badge">💰 <span id="gold-ui">0</span></div>
+        <div class="currency-badge">💎 <span id="gems-ui">0</span></div>
+        <div class="currency-badge">🏆 <span id="trophies-ui">0</span></div>
+    </div>
 
-    <section class="shop-grid">
-        <div class="shop-box brawl" onclick="openBox('brawl')">
-            <h3>BRAWL BOX</h3>
-            <span class="price">FREE</span>
+    <div class="progression-shelf">
+        <div class="shelf-title">🏆 Trophy Road Progression (Next reward at 1,000)</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="trophy-fill"></div>
+            <div class="progress-bar-text"><span id="trophy-text">0</span> / 1,000</div>
         </div>
-        <div class="shop-box big" onclick="openBox('big')">
-            <h3>BIG BOX</h3>
-            <span class="price">💎 30</span>
-        </div>
-        <div class="shop-box mega" onclick="openBox('mega')">
-            <h3>MEGA BOX</h3>
-            <span class="price">💎 80</span>
-        </div>
-    </section>
+    </div>
 
-    <section class="battle-arena">
-        <h2>🏆 Trophy Match Simulator</h2>
-        <p>Pick a Brawler and click "Brawl" to simulate a quick 3v3 match to earn Trophies and Gold!</p>
-        <button class="brawl-btn" onclick="simulateMatch()">BRAWL!</button>
-        <div id="battle-log"></div>
-    </section>
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="switchTab('shop')">SHOP</button>
+        <button class="tab-btn" onclick="switchTab('brawlers')">BRAWLERS</button>
+        <button class="tab-btn" onclick="switchTab('battle')">BRAWL!</button>
+    </div>
 
-    <section class="collection-hub">
-        <h2>MY BRAWLERS (<span id="unlocked-count">1</span>/107)</h2>
-        <div class="roster-grid" id="roster"></div>
-    </section>
+    <div class="view-panel active" id="panel-shop">
+        <div class="shop-grid">
+            <div class="box-item starr-drop-btn" onclick="generateBox('starr')">
+                <h2>STARR DROP</h2>
+                <small>Tap to test luck rarity upgrade tiers</small>
+            </div>
+            <div class="box-item big-box-btn" onclick="generateBox('big')">
+                <h3>BIG BOX</h3>
+                <small>💎 30 Gems</small>
+            </div>
+            <div class="box-item mega-box-btn" onclick="generateBox('mega')">
+                <h3>MEGA BOX</h3>
+                <small>💎 80 Gems</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="view-panel" id="panel-brawlers">
+        <div style="margin-bottom: 8px; font-size: 14px; text-align: left; color: #a0aec0;" id="unlock-fraction">Unlocked: 1 / 107</div>
+        <div class="roster-grid" id="roster-container"></div>
+    </div>
+
+    <div class="view-panel" id="panel-battle">
+        <div class="battle-pad">
+            <h2>3v3 Match Simulator</h2>
+            <p style="font-family: Arial; font-size:13px; color:#a0aec0;">Simulate standard Trophy matches to advance your Trophy Road and earn bonus Gold resources!</p>
+            <button class="action-btn" onclick="runBattleEngine()">START MATCH</button>
+            <div id="log-output" style="margin-top:15px; font-size:16px;"></div>
+        </div>
+    </div>
 </div>
 
-<div class="fullscreen-overlay" id="tap-overlay" onclick="nextReward()">
-    <div class="reward-card" id="reward-display">
-        </div>
-    <div class="items-counter" id="items-left-badge">5</div>
+<div class="overlay-screen" id="opening-overlay" onclick="advanceRewardQueue()">
+    <div class="reward-package" id="package-render"></div>
+    <div class="badge-counter" id="badge-ui">0</div>
 </div>
 
 <script src="database.js"></script>
 <script>
-    // Game Logic Engine
-    let saveState = {
-        gold: 1000,
-        gems: 150,
-        trophies: 0,
+    let appState = {
+        gold: 500, gems: 120, trophies: 0,
         unlocked: ["shelly"],
-        levels: { shelly: 1 },
-        pp: { shelly: 0 },
-        gadgets: {},
-        starPowers: {},
-        hypercharges: {}
+        gadgets: {}, starPowers: {}, hypercharges: {}
     };
 
-    const ppRequirements = [0, 20, 30, 50, 80, 130, 210, 340, 550, 890, 1440];
-    const goldRequirements = [0, 20, 35, 75, 140, 290, 480, 800, 1250, 1875, 2800];
+    let rewardQueue = [], currentPointer = 0;
 
-    let openQueue = [];
-    let currentBoxType = '';
-
-    function init() {
-        // Load data if available
-        if (localStorage.getItem("pro_bs_sim")) {
-            saveState = JSON.parse(localStorage.getItem("pro_bs_sim"));
+    function initEngine() {
+        if(localStorage.getItem("play_store_bs_sim")) {
+            appState = JSON.parse(localStorage.getItem("play_store_bs_sim"));
         }
         
-        // Ensure every brawler has a level and power point tracking system
         brawlersDatabase.forEach(b => {
-            if (!saveState.levels[b.id]) saveState.levels[b.id] = saveState.unlocked.includes(b.id) ? 1 : 0;
-            if (!saveState.pp[b.id]) saveState.pp[b.id] = 0;
-            if (!saveState.gadgets[b.id]) saveState.gadgets[b.id] = [];
-            if (!saveState.starPowers[b.id]) saveState.starPowers[b.id] = [];
-            if (!saveState.hypercharges[b.id]) saveState.hypercharges[b.id] = [];
+            if(!appState.gadgets[b.id]) appState.gadgets[b.id] = [];
+            if(!appState.starPowers[b.id]) appState.starPowers[b.id] = [];
+            if(!appState.hypercharges[b.id]) appState.hypercharges[b.id] = [];
         });
 
-        renderRoster();
-        updateDisplay();
+        renderRosterUI();
+        syncGlobalUI();
     }
 
-    function save() {
-        localStorage.setItem("pro_bs_sim", JSON.stringify(saveState));
+    function syncGlobalUI() {
+        document.getElementById("gold-ui").innerText = appState.gold;
+        document.getElementById("gems-ui").innerText = appState.gems;
+        document.getElementById("trophies-ui").innerText = appState.trophies;
+        document.getElementById("trophy-text").innerText = appState.trophies;
+        
+        let roadPercent = Math.min((appState.trophies / 1000) * 100, 100);
+        document.getElementById("trophy-fill").style.width = roadPercent + "%";
+        document.getElementById("unlock-fraction").innerText = `Unlocked: ${appState.unlocked.length} / ${brawlersDatabase.length}`;
+        
+        localStorage.setItem("play_store_bs_sim", JSON.stringify(appState));
     }
 
-    function updateDisplay() {
-        document.getElementById("gold-val").innerText = saveState.gold;
-        document.getElementById("gem-val").innerText = saveState.gems;
-        document.getElementById("trophy-val").innerText = saveState.trophies;
-        document.getElementById("unlocked-count").innerText = saveState.unlocked.length;
-    }
-
-    function renderRoster() {
-        const roster = document.getElementById("roster");
-        roster.innerHTML = "";
-
+    function renderRosterUI() {
+        const target = document.getElementById("roster-container");
+        target.innerHTML = "";
+        
         brawlersDatabase.forEach(b => {
-            const has = saveState.unlocked.includes(b.id);
-            const lv = saveState.levels[b.id] || 1;
-            const curPP = saveState.pp[b.id] || 0;
-            const reqPP = ppRequirements[lv] || 0;
-            const cost = goldRequirements[lv] || 0;
-
-            const isMax = lv >= 11;
-            const canUpgrade = !isMax && curPP >= reqPP && saveState.gold >= cost;
-
-            roster.innerHTML += `
-                <div class="brawler-card ${has ? 'active' : 'locked'}">
-                    <img src="${b.img}" alt="${b.name}">
+            let isUnlocked = appState.unlocked.includes(b.id);
+            target.innerHTML += `
+                <div class="brawler-card ${isUnlocked ? 'unlocked' : ''}">
+                    <div class="rarity-lbl" style="color:var(--${b.rarity.toLowerCase().replace(' ', '-')})">${b.rarity.toUpperCase()}</div>
+                    <img src="${b.img}" alt="${b.name}" onerror="this.src='https://media.brawltime.ninja/brawlers/shelly/avatar.png'">
                     <h4>${b.name}</h4>
-                    <p class="rarity" style="color: var(--${b.rarity.toLowerCase().replace(' ', '-')})">${b.rarity}</p>
-                    ${has ? `
-                        <p class="level">Level ${lv}</p>
-                        <div class="bar-container">
-                            <div class="bar-fill" style="width: ${isMax ? '100%' : Math.min((curPP / reqPP) * 100, 100)}%"></div>
-                            <span class="bar-text">${isMax ? 'MAX' : `${curPP}/${reqPP}`}</span>
-                        </div>
-                        ${canUpgrade ? `<button class="up-btn" onclick="upgradeBrawler('${b.id}', ${cost}, ${reqPP})">UPGRADE 💰${cost}</button>` : ''}
-                    ` : '<p class="level">LOCKED</p>'}
-                </div>
-            `;
+                </div>`;
         });
     }
 
-    function upgradeBrawler(id, cost, reqPP) {
-        if (saveState.gold >= cost && saveState.pp[id] >= reqPP) {
-            saveState.gold -= cost;
-            saveState.pp[id] -= reqPP;
-            saveState.levels[id]++;
-            save();
-            init();
-        }
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(`panel-${tabId}`).classList.add('active');
     }
 
-    // Dynamic Reward Generation Systems
-    function openBox(type) {
-        if (type === 'big') {
-            if (saveState.gems < 30) return alert("Not enough Gems!");
-            saveState.gems -= 30;
-        } else if (type === 'mega') {
-            if (saveState.gems < 80) return alert("Not enough Gems!");
-            saveState.gems -= 80;
-        }
+    function generateBox(type) {
+        if(type === 'big') { if(appState.gems < 30) return alert("Insufficient Gems!"); appState.gems -= 30; }
+        if(type === 'mega') { if(appState.gems < 80) return alert("Insufficient Gems!"); appState.gems -= 80; }
 
-        currentBoxType = type;
-        openQueue = [];
+        rewardQueue = []; currentPointer = 0;
 
-        // 1. Generate Gold reward
-        let goldVal = type === 'mega' ? rand(300, 600) : (type === 'big' ? rand(120, 220) : rand(40, 80));
-        openQueue.push({ type: 'gold', amount: goldVal });
+        if(type === 'starr') {
+            let rarities = ["Rare", "Super Rare", "Epic", "Mythic", "Legendary"];
+            let activeTier = rarities[0];
+            let upgradeRoll = Math.random() * 100;
+            
+            if(upgradeRoll < 2) activeTier = rarities[4];
+            else if(upgradeRoll < 7) activeTier = rarities[3];
+            else if(upgradeRoll < 15) activeTier = rarities[2];
+            else if(upgradeRoll < 40) activeTier = rarities[1];
 
-        // 2. Distribute Power Points dynamically
-        let pPoints = type === 'mega' ? 5 : (type === 'big' ? 3 : 1);
-        for (let i = 0; i < pPoints; i++) {
-            let ch = saveState.unlocked[Math.floor(Math.random() * saveState.unlocked.length)];
-            let amount = type === 'mega' ? rand(50, 120) : rand(15, 45);
-            openQueue.push({ type: 'pp', target: ch, amount: amount });
-        }
-
-        // 3. Roll for new Brawlers or Abilities
-        let rolls = type === 'mega' ? 3 : (type === 'big' ? 1 : 0.2);
-        for (let x = 0; x < rolls; x++) {
-            if (Math.random() < 0.1) { // 10% Chance for special drops
-                let randomOwned = saveState.unlocked[Math.floor(Math.random() * saveState.unlocked.length)];
-                let data = brawlersDatabase.find(b => b.id === randomOwned);
-                let lv = saveState.levels[randomOwned];
-                
-                if (lv >= 7 && Math.random() < 0.5) {
-                    let lockedG = data.gadgets.filter(g => !saveState.gadgets[randomOwned].includes(g));
-                    if (lockedG.length > 0) openQueue.push({ type: 'gadget', brawler: data.name, name: lockedG[0], target: randomOwned });
-                } else if (lv >= 9 && Math.random() < 0.3) {
-                    let lockedSP = data.starPowers.filter(sp => !saveState.starPowers[randomOwned].includes(sp));
-                    if (lockedSP.length > 0) openQueue.push({ type: 'starpower', brawler: data.name, name: lockedSP[0], target: randomOwned });
-                } else if (lv >= 11 && Math.random() < 0.1) {
-                    if (!saveState.hypercharges[randomOwned].includes(data.hypercharge)) {
-                        openQueue.push({ type: 'hypercharge', brawler: data.name, name: data.hypercharge, target: randomOwned });
-                    }
-                }
-            } else if (Math.random() < 0.15) { // 15% Chance for a Brawler
-                let lockedBrawlers = brawlersDatabase.filter(b => !saveState.unlocked.includes(b.id));
-                if (lockedBrawlers.length > 0) {
-                    let chosen = lockedBrawlers[Math.floor(Math.random() * lockedBrawlers.length)];
-                    openQueue.push({ type: 'brawler', data: chosen });
-                }
-            }
-        }
-
-        // Show Interface Overlay
-        document.getElementById("tap-overlay").style.display = "flex";
-        document.getElementById("items-left-badge").innerText = openQueue.length;
-        nextReward();
-    }
-
-    function nextReward() {
-        if (openQueue.length > 0) {
-            let item = openQueue.shift();
-            document.getElementById("items-left-badge").innerText = openQueue.length;
-            const rewardDisplay = document.getElementById("reward-display");
-
-            if (item.type === 'gold') {
-                saveState.gold += item.amount;
-                rewardDisplay.innerHTML = `<h2>💰 GOLD</h2><h1>+${item.amount}</h1>`;
-            } else if (item.type === 'pp') {
-                saveState.pp[item.target] += item.amount;
-                rewardDisplay.innerHTML = `<h2>⚡ POWER POINTS</h2><h3>+${item.amount} to ${item.target.toUpperCase()}</h3>`;
-            } else if (item.type === 'brawler') {
-                saveState.unlocked.push(item.data.id);
-                saveState.levels[item.data.id] = 1;
-                rewardDisplay.innerHTML = `<h2>⭐ NEW BRAWLER UNLOCKED! ⭐</h2><img src="${item.data.img}" style="width:120px;"><h1 style="color:var(--legendary)">${item.data.name.toUpperCase()}</h1>`;
-            } else if (item.type === 'gadget') {
-                saveState.gadgets[item.target].push(item.name);
-                rewardDisplay.innerHTML = `<h2 style="color:var(--gadget)">🟢 GADGET UNLOCKED!</h2><h3>${item.name} (${item.brawler})</h3>`;
-            } else if (item.type === 'starpower') {
-                saveState.starPowers[item.target].push(item.name);
-                rewardDisplay.innerHTML = `<h2 style="color:var(--star-power)">🟡 STAR POWER UNLOCKED!</h2><h3>${item.name} (${item.brawler})</h3>`;
-            } else if (item.type === 'hypercharge') {
-                saveState.hypercharges[item.target].push(item.name);
-                rewardDisplay.innerHTML = `<h2 style="color:var(--hypercharge)">💜 HYPERCHARGE UNLOCKED!</h2><h3>${item.name} (${item.brawler})</h3>`;
-            }
+            rewardQueue.push({ type: 'starr_drop_reveal', tier: activeTier });
         } else {
-            document.getElementById("tap-overlay").style.display = "none";
-            save();
-            init();
+            let goldValue = type === 'mega' ? rand(350, 700) : rand(100, 250);
+            rewardQueue.push({ type: 'gold', val: goldValue });
+
+            let characterRoll = Math.random() * 100;
+            if(characterRoll < 25) { 
+                let lockedList = brawlersDatabase.filter(b => !appState.unlocked.includes(b.id));
+                if(lockedList.length > 0) {
+                    rewardQueue.push({ type: 'brawler', data: lockedList[Math.floor(Math.random() * lockedList.length)] });
+                }
+            }
+        }
+
+        document.getElementById("opening-overlay").style.display = "flex";
+        advanceRewardQueue();
+    }
+
+    function advanceRewardQueue() {
+        const renderZone = document.getElementById("package-render");
+        const badge = document.getElementById("badge-ui");
+
+        if(currentPointer < rewardQueue.length) {
+            let item = rewardQueue[currentPointer];
+            badge.innerText = rewardQueue.length - currentPointer - 1;
+
+            if(item.type === 'starr_drop_reveal') {
+                let colorKey = item.tier.toLowerCase().replace(' ', '-');
+                renderZone.innerHTML = `<span style="color:var(--${colorKey})">${item.tier.toUpperCase()} STARR DROP!</span><br><br>🎁`;
+                
+                if(item.tier === 'Legendary' && Math.random() < 0.6) {
+                    let lockedList = brawlersDatabase.filter(b => !appState.unlocked.includes(b.id));
+                    if(lockedList.length > 0) rewardQueue.push({ type: 'brawler', data: lockedList[Math.floor(Math.random() * lockedList.length)] });
+                } else {
+                    rewardQueue.push({ type: 'gold', val: rand(200, 1000) });
+                }
+            }
+            else if(item.type === 'gold') {
+                appState.gold += item.val;
+                renderZone.innerHTML = `💰<br>+${item.val}<br><span style="font-size:20px;">Gold Added</span>`;
+            }
+            else if(item.type === 'brawler') {
+                appState.unlocked.push(item.data.id);
+                renderZone.innerHTML = `⭐ NEW UNLOCK! ⭐<br><br><img src="${item.data.img}" style="width:110px; border-radius:12px;" onerror="this.src='https://media.brawltime.ninja/brawlers/shelly/avatar.png'"><br><span style="color:var(--starting)">${item.data.name.toUpperCase()}</span>`;
+            }
+            currentPointer++;
+        } else {
+            document.getElementById("opening-overlay").style.display = "none";
+            renderRosterUI();
+            syncGlobalUI();
         }
     }
 
-    function simulateMatch() {
-        let win = Math.random() < 0.55;
-        let trophyGain = win ? 8 : -6;
-        let goldGain = win ? rand(20, 50) : rand(5, 15);
+    function runBattleEngine() {
+        let victory = Math.random() < 0.55;
+        let trophyDelta = victory ? 8 : -6;
+        let goldPayout = victory ? rand(25, 60) : rand(5, 15);
 
-        saveState.trophies = Math.max(0, saveState.trophies + trophyGain);
-        saveState.gold += goldGain;
+        appState.trophies = Math.max(0, appState.trophies + trophyDelta);
+        appState.gold += goldPayout;
 
-        document.getElementById("battle-log").innerHTML = `
-            <div style="color: ${win ? '#46e246' : '#ff4e70'}; font-weight: bold;">
-                ${win ? 'VICTORY! 🎉' : 'DEFEAT 😢'}
+        document.getElementById("log-output").innerHTML = `
+            <div style="color:${victory ? '#46e246':'#ff4e70'}; font-size:20px; font-weight:bold; margin-bottom:5px;">
+                ${victory ? 'VICTORY! 🎉' : 'MATCH DEFEAT 💔'}
             </div>
-            <div>Trophies: ${trophyGain > 0 ? '+' : ''}${trophyGain} | Gold earned: 💰+${goldGain}</div>
-        `;
-        save();
-        updateDisplay();
+            <small style="font-family:Arial;">Trophies: ${trophyDelta > 0 ? '+':''}${trophyDelta} | Gold: +💰${goldPayout}</small>`;
+        
+        syncGlobalUI();
     }
 
     function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-
-    window.onload = init;
+    window.onload = initEngine;
 </script>
 </body>
 </html>
