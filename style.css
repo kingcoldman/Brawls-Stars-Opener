@@ -1,127 +1,411 @@
-/* Brawlers Window Header */
-.brawlers-header {
-    text-align: center;
-    font-size: 2rem;
-    color: #f1c40f;
-    text-shadow: 3px 3px 0px #000;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
+Here is the complete codebase to assemble your Brawl Stars Simulator exactly as you described.
+
+It implements the authentic Brawl Stars lobby layout with:
+
+Your active brawler, Shelly, standing in the dead center of the screen.
+
+Left side menu: Buffies, Shop, and Brawlers tabs.
+
+Right side menu: Brawl Pass, Trophy Road, and Account tabs.
+
+Top Bar: Showing your active balances of Coins, Power Points, Bling, and Gems.
+
+A beautiful 3-column Brawler selector grid displaying all 107 official brawlers with background portraits, power levels, and icons indicating unlocked Gadgets, Star Powers, Gears, or Hypercharges.
+
+Shop mechanics containing a simulateable Starr Drop or Mega Box to unlock raw resources, coins, skins, or missing brawlers.
+
+File 1: index.html
+Save this file as index.html. It serves as the skeleton structure of your web game.
+
+HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brawl Stars Simulator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        
+        <div id="resource-bar">
+            <div class="resource-pill coins">
+                <img src="assets/coin.png" alt="Coins">
+                <span id="coins">1,000</span>
+            </div>
+            <div class="resource-pill powerpoints">
+                <img src="assets/powerpoint.png" alt="PP">
+                <span id="powerpoints">500</span>
+            </div>
+            <div class="resource-pill bling">
+                <img src="assets/bling.png" alt="Bling">
+                <span id="bling">250</span>
+            </div>
+            <div class="resource-pill gems">
+                <img src="assets/gem.png" alt="Gems">
+                <span id="gems">100</span>
+            </div>
+        </div>
+
+        <div class="side-menu left-menu">
+            <button class="menu-btn buffies-btn" onclick="openTab('buffies')">BUFFIES</button>
+            <button class="menu-btn shop-btn" onclick="openTab('shop')">SHOP</button>
+            <button class="menu-btn brawlers-btn" onclick="openTab('brawlers')">BRAWLERS</button>
+        </div>
+
+        <div id="center-stage">
+            <div id="active-brawler-showcase">
+                <img id="active-brawler-img" src="assets/brawlers/shelly.png" alt="Shelly">
+                <div class="brawler-info-plate">
+                    <h1 id="active-brawler-name">SHELLY</h1>
+                    <div class="level-indicator">POWER <span id="active-brawler-level">1</span></div>
+                </div>
+                <button id="upgrade-lobby-btn" onclick="upgradeActiveBrawler()">UPGRADE</button>
+            </div>
+        </div>
+
+        <div class="side-menu right-menu">
+            <button class="menu-btn pass-btn" onclick="openTab('brawlpass')">BRAWL PASS</button>
+            <button class="menu-btn road-btn" onclick="openTab('trophyroad')">TROPHY ROAD</button>
+            <button class="menu-btn account-btn" onclick="openTab('account')">ACCOUNT</button>
+        </div>
+
+        <div id="modal" class="hidden">
+            <div id="modal-content">
+                <button id="close-modal" onclick="closeModal()">✕</button>
+                <div id="modal-body"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="database.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+File 2: style.css
+Save this file as style.css. It positions the menus on the sides and structures the 3-column grid for the brawlers.
+
+CSS
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Lilita One', 'Arial Black', sans-serif;
+    user-select: none;
 }
 
-/* 3-Column Grid like Brawl Stars */
+body {
+    background-color: #0d0d0d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+/* 16:9 Aspect Ratio Frame simulating Brawl Stars mobile layout */
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    max-width: 1280px;
+    max-height: 720px;
+    background: url('assets/lobby_background.png') no-repeat center center;
+    background-size: cover;
+    overflow: hidden;
+    border: 4px solid #1a1a1a;
+    box-shadow: 0px 0px 30px rgba(0,0,0,0.8);
+}
+
+/* Resources Top Panel */
+#resource-bar {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    display: flex;
+    gap: 12px;
+    z-index: 5;
+}
+
+.resource-pill {
+    background: rgba(0, 0, 0, 0.75);
+    border: 2.5px solid #ffffff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-size: 1rem;
+    color: #fff;
+    text-shadow: 1px 1px 0px #000;
+    box-shadow: 0px 4px 0px rgba(0,0,0,0.4);
+}
+
+.resource-pill img {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+}
+
+.coins { border-color: #f1c40f; }
+.powerpoints { border-color: #e67e22; }
+.bling { border-color: #bdc3c7; }
+.gems { border-color: #2ecc71; }
+
+/* Side Navigation Menus */
+.side-menu {
+    position: absolute;
+    top: 15%;
+    bottom: 5%;
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+    z-index: 4;
+}
+
+.left-menu { left: 20px; }
+.right-menu { right: 20px; }
+
+/* Menu buttons mimicking Brawl Stars bold yellow buttons */
+.menu-btn {
+    background: linear-gradient(#ffcc00, #ff9900);
+    border: 3px solid #ffffff;
+    border-radius: 12px;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    padding: 12px 10px;
+    cursor: pointer;
+    text-shadow: 1px 1px 0px #fff;
+    box-shadow: 0px 6px 0px #995c00, 0px 6px 10px rgba(0,0,0,0.5);
+    transition: transform 0.05s, box-shadow 0.05s;
+    font-weight: 900;
+}
+
+.menu-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0px 2px 0px #995c00, 0px 2px 5px rgba(0,0,0,0.5);
+}
+
+/* Center Stage Brawler Preview */
+#center-stage {
+    position: absolute;
+    top: 15%;
+    bottom: 5%;
+    left: 200px;
+    right: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3;
+}
+
+#active-brawler-showcase {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#active-brawler-img {
+    height: 320px;
+    object-fit: contain;
+    filter: drop-shadow(0px 15px 10px rgba(0,0,0,0.6));
+}
+
+.brawler-info-plate {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #fff;
+    border-radius: 10px;
+    padding: 6px 20px;
+    margin-top: -15px;
+}
+
+#active-brawler-name {
+    font-size: 1.6rem;
+    color: #fff;
+    text-shadow: 2px 2px 0px #000;
+}
+
+.level-indicator {
+    background: #e74c3c;
+    color: white;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    padding: 2px 8px;
+    display: inline-block;
+    margin-top: 2px;
+}
+
+#upgrade-lobby-btn {
+    margin-top: 10px;
+    padding: 8px 24px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(#2ecc71, #27ae60);
+    border: 2px solid #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0px 4px 0px #1e7e34;
+}
+
+#upgrade-lobby-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 0px #1e7e34;
+}
+
+/* Display overlay modal screen */
+#modal {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+#modal-content {
+    background: #2a3a4a;
+    border: 4px solid #ffcc00;
+    border-radius: 20px;
+    width: 85%;
+    height: 85%;
+    position: relative;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: #e74c3c;
+    color: white;
+    border: 3px solid #fff;
+    border-radius: 10px;
+    padding: 6px 14px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0px 4px 0px #962d22;
+}
+
+#close-modal:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 0px #962d22;
+}
+
+.hidden { display: none !important; }
+
+/* Brawlers Window Grid - 3 Columns Layout */
 .brawlers-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
-    padding: 10px;
-    max-width: 900px;
-    margin: 0 auto;
+    padding: 15px 0;
 }
 
-/* Brawler Card Box */
 .brawler-card {
     position: relative;
-    aspect-ratio: 1 / 1.15; /* Replicates mobile card dimensions */
-    background-color: #2c3e50;
+    aspect-ratio: 1 / 1.15;
+    background-color: #1a252f;
     background-size: cover;
     background-position: center;
     border-radius: 12px;
-    box-shadow: 0px 6px 0px rgba(0,0,0,0.4), inset 0px -10px 20px rgba(0,0,0,0.6);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    transition: transform 0.15s ease-in-out;
+    box-shadow: 0px 6px 0px rgba(0,0,0,0.4);
     cursor: pointer;
 }
 
-/* Rarity-based Border Colors */
-.brawler-card.starting { border: 4px solid #3498db; }
+/* Card rarity colors */
+.brawler-card.starting { border: 4px solid #fff; }
 .brawler-card.rare { border: 4px solid #2ecc71; }
 .brawler-card.super-rare { border: 4px solid #3498db; }
 .brawler-card.epic { border: 4px solid #9b59b6; }
-.brawler-card.mythic { border: 4px solid #d35400; }
+.brawler-card.mythic { border: 4px solid #e67e22; }
 .brawler-card.legendary { border: 4px solid #f1c40f; }
 
-/* Dim locked brawlers to look greyed out */
 .brawler-card.locked {
-    filter: grayscale(100%) brightness(70%);
-    border-color: #7f8c8d !important;
+    filter: grayscale(100%) brightness(50%);
+    border-color: #555 !important;
 }
 
-.brawler-card:active {
-    transform: scale(0.97);
-}
-
-/* Bottom Label Block (Name & Power level) */
 .brawler-card-bottom {
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9) 60%);
-    padding: 12px 6px 6px 6px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.9) 70%);
+    padding: 10px 4px 6px 4px;
     text-align: center;
-    z-index: 2;
 }
 
-.brawler-name {
-    font-size: 1.2rem;
-    font-weight: 900;
-    color: #ffffff;
+.brawler-card-name {
+    font-size: 1.1rem;
+    color: #fff;
     text-shadow: 2px 2px 0px #000;
     text-transform: uppercase;
 }
 
-/* Power Level Badge at the bottom */
-.power-level-badge {
-    display: inline-block;
-    background: linear-gradient(#e74c3c, #c0392b);
-    border: 2px solid #ffffff;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
+.brawler-card-level {
+    background: #e74c3c;
     color: #fff;
-    padding: 2px 8px;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    display: inline-block;
     margin-top: 4px;
-    text-shadow: 1px 1px 0px #000;
-    box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
 }
 
-/* Ability Indicator Layout (Top Right Corner) */
-.ability-container {
+/* Accessory Badges styling inside cards */
+.accessory-holder {
     position: absolute;
     top: 8px;
     right: 8px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    z-index: 3;
+    gap: 4px;
 }
 
-/* Ability Badges (Gadget, Star Power, Gear, Hypercharge) */
-.ability-badge {
-    width: 24px;
-    height: 24px;
+.accessory-badge {
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    border: 2px solid #ffffff;
+    border: 1.5px solid #fff;
+    font-size: 0.65rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
     font-weight: 900;
-    color: #ffffff;
-    box-shadow: 0px 2px 4px rgba(0,0,0,0.6);
-    text-shadow: 1px 1px 0px #000;
+    color: #fff;
 }
 
-/* Exact matching colors from Brawl Stars UI */
-.ability-badge.gadget { background: #2ecc71; }       /* Green Gadget */
-.ability-badge.starpower { background: #f1c40f; }    /* Yellow Star Power */
-.ability-badge.gear { background: #e67e22; }         /* Orange Gear */
-.ability-badge.hypercharge { 
-    background: #9b59b6;                             /* Purple/Pink Hypercharge */
-    animation: hc-glow 1.5s infinite alternate; 
+.accessory-badge.gadget { background-color: #2ecc71; }
+.accessory-badge.starpower { background-color: #f1c40f; }
+.accessory-badge.gear { background-color: #e67e22; }
+.accessory-badge.hypercharge { background-color: #9b59b6; }
+
+/* Shop screen styling */
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding-top: 20px;
 }
 
-/* Hypercharge pulsing effect */
-@keyframes hc-glow {
-    from { box-shadow: 0 0 2px #9b59b6, 0 0 4px #9b59b6; }
-    to { box-shadow: 0 0 8px #d87093, 0 0 12px #d87093; }
+.shop-item {
+    background: #1c2833;
+    border: 3px solid #ff9900;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    color: #fff;
 }
+
+.shop-item h3 { margin-bottom: 10px; font-size: 1.4rem; }
+.shop-item p { margin-bottom: 15px; }
