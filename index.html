@@ -5,46 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brawl Stars Simulator</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="game-container">
+        
         <div id="resource-bar">
-            <div class="resource"><img src="assets/coin.png" alt="Coins"> <span id="coins">1000</span></div>
-            <div class="resource"><img src="assets/powerpoint.png" alt="Power Points"> <span id="powerpoints">500</span></div>
-            <div class="resource"><img src="assets/bling.png" alt="Bling"> <span id="bling">250</span></div>
-            <div class="resource"><img src="assets/gem.png" alt="Gems"> <span id="gems">50</span></div>
+            <div class="resource-pill coins">
+                <img src="assets/coin.png" alt="Coins">
+                <span id="coins">1,000</span>
+            </div>
+            <div class="resource-pill powerpoints">
+                <img src="assets/powerpoint.png" alt="PP">
+                <span id="powerpoints">500</span>
+            </div>
+            <div class="resource-pill bling">
+                <img src="assets/bling.png" alt="Bling">
+                <span id="bling">250</span>
+            </div>
+            <div class="resource-pill gems">
+                <img src="assets/gem.png" alt="Gems">
+                <span id="gems">100</span>
+            </div>
         </div>
 
         <div class="side-menu left-menu">
-            <button class="menu-btn" onclick="openTab('shop')">🛒 Shop</button>
-            <button class="menu-btn" onclick="openTab('brawlers')">🤠 Brawlers</button>
-            <button class="menu-btn" onclick="openTab('brawlpass')">🎫 Brawl Pass</button>
+            <button class="menu-btn buffies-btn" onclick="openTab('buffies')">BUFFIES</button>
+            <button class="menu-btn shop-btn" onclick="openTab('shop')">SHOP</button>
+            <button class="menu-btn brawlers-btn" onclick="openTab('brawlers')">BRAWLERS</button>
         </div>
 
         <div id="center-stage">
-            <div id="brawler-showcase">
-                <img id="active-brawler-img" src="assets/shelly.png" alt="Shelly">
-                <h2 id="active-brawler-name">Shelly</h2>
-                <p>Power Level: <span id="active-brawler-level">1</span></p>
-                <button id="upgrade-btn" onclick="upgradeActiveBrawler()">Upgrade (100 Coins, 50 PP)</button>
+            <div id="active-brawler-showcase">
+                <img id="active-brawler-img" src="assets/brawlers/shelly.png" alt="Shelly">
+                <div class="brawler-info-plate">
+                    <h1 id="active-brawler-name">SHELLY</h1>
+                    <div class="level-indicator">POWER <span id="active-brawler-level">1</span></div>
+                </div>
+                <button id="upgrade-lobby-btn" onclick="upgradeActiveBrawler()">UPGRADE</button>
             </div>
         </div>
 
         <div class="side-menu right-menu">
-            <button class="menu-btn" onclick="openTab('trophyroad')">🏆 Trophy Road</button>
-            <button class="menu-btn" onclick="openTab('account')">👤 Account</button>
-            <button class="menu-btn" onclick="openTab('buffies')">✨ Buffies</button>
+            <button class="menu-btn pass-btn" onclick="openTab('brawlpass')">BRAWL PASS</button>
+            <button class="menu-btn road-btn" onclick="openTab('trophyroad')">TROPHY ROAD</button>
+            <button class="menu-btn account-btn" onclick="openTab('account')">ACCOUNT</button>
         </div>
 
         <div id="modal" class="hidden">
             <div id="modal-content">
-                <button id="close-modal" onclick="closeModal()">X</button>
-                <div id="modal-body">
-                    </div>
+                <button id="close-modal" onclick="closeModal()">✕</button>
+                <div id="modal-body"></div>
             </div>
         </div>
+
     </div>
 
+    <script src="database.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
