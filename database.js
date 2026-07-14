@@ -1,126 +1,141 @@
-// database.js
+// Global Game State
+const gameState = {
+    resources: {
+        coins: 1000,
+        powerpoints: 500,
+        bling: 250,
+        gems: 50
+    },
+    unlockedBrawlers: {
+        "Shelly": { level: 1, powerPoints: 0 }
+    },
+    activeBrawler: "Shelly"
+};
 
-const brawlersDatabase = [
-    // Starting
-    { id: "shelly", name: "Shelly", rarity: "Starting", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
+// Database of some of the Brawlers (You can expand this to include all 107!)
+const brawlersDatabase = {
+    "Shelly": { rarity: "Starting", img: "assets/shelly.png" },
+    "Colt": { rarity: "Rare", img: "assets/colt.png" },
+    "El Primo": { rarity: "Rare", img: "assets/el_primo.png" },
+    "Poco": { rarity: "Rare", img: "assets/poco.png" },
+    "Mortis": { rarity: "Mythic", img: "assets/mortis.png" },
+    "Leon": { rarity: "Legendary", img: "assets/leon.png" }
+};
 
-    // Rare
-    { id: "colt", name: "Colt", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/colt/avatar.png" },
-    { id: "el_primo", name: "El Primo", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/el_primo/avatar.png" },
-    { id: "brock", name: "Brock", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/brock/avatar.png" },
-    { id: "barley", name: "Barley", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/barley/avatar.png" },
-    { id: "poco", name: "Poco", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/poco/avatar.png" },
-    { id: "rosa", name: "Rosa", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/rosa/avatar.png" },
-    { id: "nita", name: "Nita", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/nita/avatar.png" },
-    { id: "bull", name: "Bull", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/bull/avatar.png" },
+// Update Top UI Display
+function updateUI() {
+    document.getElementById('coins').innerText = gameState.resources.coins;
+    document.getElementById('powerpoints').innerText = gameState.resources.powerpoints;
+    document.getElementById('bling').innerText = gameState.resources.bling;
+    document.getElementById('gems').innerText = gameState.resources.gems;
 
-    // Super Rare
-    { id: "jessie", name: "Jessie", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/jessie/avatar.png" },
-    { id: "dynamike", name: "Dynamike", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/dynamike/avatar.png" },
-    { id: "tick", name: "Tick", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/tick/avatar.png" },
-    { id: "rico", name: "Rico", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/rico/avatar.png" },
-    { id: "darryl", name: "Darryl", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/darryl/avatar.png" },
-    { id: "penny", name: "Penny", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/penny/avatar.png" },
-    { id: "carl", name: "Carl", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/carl/avatar.png" },
-    { id: "jacky", name: "Jacky", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/jacky/avatar.png" },
-    { id: "gus", name: "Gus", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/gus/avatar.png" },
-    { id: "8_bit", name: "8-Bit", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/8-bit/avatar.png" },
+    const brawler = gameState.unlockedBrawlers[gameState.activeBrawler];
+    document.getElementById('active-brawler-name').innerText = gameState.activeBrawler;
+    document.getElementById('active-brawler-level').innerText = brawler.level;
+    document.getElementById('active-brawler-img').src = brawlersDatabase[gameState.activeBrawler].img;
+}
 
-    // Epic
-    { id: "piper", name: "Piper", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/piper/avatar.png" },
-    { id: "frank", name: "Frank", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/frank/avatar.png" },
-    { id: "edgar", name: "Edgar", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/edgar/avatar.png" },
-    { id: "colette", name: "Colette", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/colette/avatar.png" },
-    { id: "grom", name: "Grom", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/grom/avatar.png" },
-    { id: "bonnie", name: "Bonnie", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/bonnie/avatar.png" },
-    { id: "mandy", name: "Mandy", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/mandy/avatar.png" },
-    { id: "pam", name: "Pam", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/pam/avatar.png" },
-    { id: "bibi", name: "Bibi", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/bibi/avatar.png" },
-    { id: "bea", name: "Bea", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/bea/avatar.png" },
-    { id: "nani", name: "Nani", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/nani/avatar.png" },
-    { id: "griff", name: "Griff", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/griff/avatar.png" },
-    { id: "ash", name: "Ash", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/ash/avatar.png" },
-    { id: "lola", name: "Lola", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/lola/avatar.png" },
-    { id: "gale", name: "Gale", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/gale/avatar.png" },
-    { id: "sam", name: "Sam", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/sam/avatar.png" },
-    { id: "maisie", name: "Maisie", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/maisie/avatar.png" },
-    { id: "hank", name: "Hank", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/hank/avatar.png" },
-    { id: "pearl", name: "Pearl", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/pearl/avatar.png" },
-    { id: "charlie", name: "Charlie", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/charlie/avatar.png" },
-    { id: "larry_lawrie", name: "Larry & Lawrie", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/larry_and_lawrie/avatar.png" },
-    { id: "angelo", name: "Angelo", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/angelo/avatar.png" },
-    { id: "melodie", name: "Melodie", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/melodie/avatar.png" },
-    { id: "berry", name: "Berry", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/berry/avatar.png" },
-    { id: "moe", name: "Moe", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/moe/avatar.png" },
-    { id: "bo", name: "Bo", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/bo/avatar.png" },
-    { id: "emz", name: "Emz", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/emz/avatar.png" },
-    { id: "stu", name: "Stu", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/stu/avatar.png" },
-    { id: "bolt", name: "Bolt", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/bolt/avatar.png" },
-    { id: "meeple", name: "Meeple", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "shade", name: "Shade", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "lumi", name: "Lumi", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
+// Upgrade active brawler
+function upgradeActiveBrawler() {
+    const brawler = gameState.unlockedBrawlers[gameState.activeBrawler];
+    const coinCost = brawler.level * 100;
+    const ppCost = brawler.level * 50;
 
-    // Mythic
-    { id: "mortis", name: "Mortis", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/mortis/avatar.png" },
-    { id: "tara", name: "Tara", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/tara/avatar.png" },
-    { id: "gene", name: "Gene", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/gene/avatar.png" },
-    { id: "max", name: "Max", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/max/avatar.png" },
-    { id: "mico", name: "Mico", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/mico/avatar.png" },
-    { id: "starr_nova", name: "Starr Nova", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "mr_p", name: "Mr. P", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/mr_p/avatar.png" },
-    { id: "sprout", name: "Sprout", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/sprout/avatar.png" },
-    { id: "byron", name: "Byron", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/byron/avatar.png" },
-    { id: "squeak", name: "Squeak", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/squeak/avatar.png" },
-    { id: "lou", name: "Lou", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/lou/avatar.png" },
-    { id: "ruffs", name: "Ruffs", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/ruffs/avatar.png" },
-    { id: "buzz", name: "Buzz", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/buzz/avatar.png" },
-    { id: "fang", name: "Fang", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/fang/avatar.png" },
-    { id: "eve", name: "Eve", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/eve/avatar.png" },
-    { id: "janet", name: "Janet", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/janet/avatar.png" },
-    { id: "otis", name: "Otis", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/otis/avatar.png" },
-    { id: "buster", name: "Buster", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/buster/avatar.png" },
-    { id: "rt", name: "R-T", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/rt/avatar.png" },
-    { id: "doug", name: "Doug", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/doug/avatar.png" },
-    { id: "chuck", name: "Chuck", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/chuck/avatar.png" },
-    { id: "lily", name: "Lily", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/lily/avatar.png" },
-    { id: "clancy", name: "Clancy", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/clancy/avatar.png" },
-    { id: "juju", name: "Juju", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "chucho", name: "Chucho", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "mina", name: "Mina", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "wendy", name: "Wendy", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "damian", name: "Damian", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "sirius", name: "Sirius", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "najia", name: "Najia", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "ollie", name: "Ollie", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "gigi", name: "Gigi", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
+    if (gameState.resources.coins >= coinCost && gameState.resources.powerpoints >= ppCost) {
+        gameState.resources.coins -= coinCost;
+        gameState.resources.powerpoints -= ppCost;
+        brawler.level += 1;
+        updateUI();
+        alert(`${gameState.activeBrawler} upgraded to Level ${brawler.level}!`);
+    } else {
+        alert("Not enough resources to upgrade!");
+    }
+}
 
-    // Legendary
-    { id: "spike", name: "Spike", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/spike/avatar.png" },
-    { id: "crow", name: "Crow", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/crow/avatar.png" },
-    { id: "leon", name: "Leon", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/leon/avatar.png" },
-    { id: "sandy", name: "Sandy", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/sandy/avatar.png" },
-    { id: "amber", name: "Amber", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/amber/avatar.png" },
-    { id: "meg", name: "Meg", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/meg/avatar.png" },
-    { id: "chester", name: "Chester", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/chester/avatar.png" },
-    { id: "cordelius", name: "Cordelius", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/cordelius/avatar.png" },
-    { id: "kit", name: "Kit", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/kit/avatar.png" },
-    { id: "draco", name: "Draco", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/draco/avatar.png" },
-    { id: "kenji", name: "Kenji", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/kenji/avatar.png" },
-    { id: "nori", name: "Nori", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "pierce", name: "Pierce", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "finx", name: "Finx", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "ziggy", name: "Ziggy", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "kaze", name: "Kaze", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "surge", name: "Surge", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/surge/avatar.png" },
-    { id: "gray", name: "Gray", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/gray/avatar.png" },
-    { id: "willow", name: "Willow", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/willow/avatar.png" },
-    { id: "boone", name: "Boone", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "alli", name: "Alli", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "fiona", name: "Fiona", rarity: "Mythic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "vince", name: "Vince", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "tessa", name: "Tessa", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "karl", name: "Karl", rarity: "Super Rare", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "gideon", name: "Gideon", rarity: "Legendary", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "rexa", name: "Rexa", rarity: "Epic", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" },
-    { id: "scrappy", name: "Scrappy", rarity: "Rare", img: "https://media.brawltime.ninja/brawlers/shelly/avatar.png" }
-];
+// Side Menu Navigation Handler
+function openTab(tabName) {
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modal-body');
+    modal.classList.remove('hidden');
+
+    if (tabName === 'shop') {
+        modalBody.innerHTML = `
+            <h2>Starr Drop & Box Shop</h2>
+            <div style="display:flex; gap: 20px; margin-top:20px;">
+                <button onclick="openStarrDrop()" class="menu-btn">Open Starr Drop (Free)</button>
+                <button onclick="openMegaBox()" class="menu-btn">Open Mega Box (80 Gems)</button>
+            </div>
+        `;
+    } else if (tabName === 'brawlers') {
+        let brawlersHTML = '<h2>My Brawlers</h2><div style="display:flex; flex-wrap:wrap; gap:10px;">';
+        for (let name in gameState.unlockedBrawlers) {
+            brawlersHTML += `
+                <div style="background:#2c3e50; border:2px solid #fff; padding:10px; border-radius:8px; text-align:center;">
+                    <img src="${brawlersDatabase[name].img}" width="80"><br>
+                    <strong>${name}</strong><br>
+                    Level ${gameState.unlockedBrawlers[name].level}
+                </div>`;
+        }
+        brawlersHTML += '</div>';
+        modalBody.innerHTML = brawlersHTML;
+    } else {
+        modalBody.innerHTML = `<h2>${tabName.toUpperCase()}</h2><p>Feature coming soon in full version!</p>`;
+    }
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+}
+
+// Starr Drop Gacha Mechanic
+function openStarrDrop() {
+    const roll = Math.random();
+    let rewardType = "";
+    let amount = 0;
+    let brawlerWon = null;
+
+    if (roll < 0.50) {
+        rewardType = "coins";
+        amount = Math.floor(Math.random() * 100) + 50;
+        gameState.resources.coins += amount;
+    } else if (roll < 0.85) {
+        rewardType = "powerpoints";
+        amount = Math.floor(Math.random() * 50) + 20;
+        gameState.resources.powerpoints += amount;
+    } else {
+        // Find a brawler that isn't unlocked yet
+        const lockedBrawlers = Object.keys(brawlersDatabase).filter(b => !gameState.unlockedBrawlers[b]);
+        if (lockedBrawlers.length > 0) {
+            brawlerWon = lockedBrawlers[Math.floor(Math.random() * lockedBrawlers.length)];
+            gameState.unlockedBrawlers[brawlerWon] = { level: 1, powerPoints: 0 };
+        } else {
+            // Backup reward if all brawlers unlocked
+            rewardType = "bling";
+            amount = 100;
+            gameState.resources.bling += amount;
+        }
+    }
+
+    // Display the drop reward inside the modal
+    const modalBody = document.getElementById('modal-body');
+    if (brawlerWon) {
+        modalBody.innerHTML = `
+            <div style="text-align:center;">
+                <h1 style="color:#e74c3c;">⭐ STARR DROP UNLOCK! ⭐</h1>
+                <img src="${brawlersDatabase[brawlerWon].img}" width="150">
+                <h2>Unlocked Brawler: ${brawlerWon}!</h2>
+                <button onclick="closeModal()" class="menu-btn">Awesome!</button>
+            </div>`;
+    } else {
+        modalBody.innerHTML = `
+            <div style="text-align:center;">
+                <h1>Starr Drop Reward</h1>
+                <h2>+${amount} ${rewardType.toUpperCase()}</h2>
+                <button onclick="closeModal()" class="menu-btn">Claim</button>
+            </div>`;
+    }
+    updateUI();
+}
+
+// Initialize UI on Load
+window.onload = updateUI;
