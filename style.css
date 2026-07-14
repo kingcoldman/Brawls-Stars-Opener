@@ -1,153 +1,127 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Lilita One', 'Arial Black', sans-serif; /* Brawl Stars style font */
+/* Brawlers Window Header */
+.brawlers-header {
+    text-align: center;
+    font-size: 2rem;
+    color: #f1c40f;
+    text-shadow: 3px 3px 0px #000;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
 }
 
-body {
-    background: radial-gradient(circle, #2c3e50, #0f171e);
-    color: white;
-    overflow: hidden;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#game-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    max-width: 1280px;
-    max-height: 720px;
-    background: url('assets/lobby_background.png') no-repeat center center;
-    background-size: cover;
-    border: 4px solid #f39c12;
-    overflow: hidden;
-}
-
-/* Resource Bar at top */
-#resource-bar {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    display: flex;
+/* 3-Column Grid like Brawl Stars */
+.brawlers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 8px 15px;
-    border-radius: 20px;
-    border: 2px solid #ffd700;
+    padding: 10px;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-.resource {
-    display: flex;
-    align-items: center;
-    font-size: 1.1rem;
-    gap: 5px;
-}
-
-.resource img {
-    width: 24px;
-    height: 24px;
-}
-
-/* Side Menus */
-.side-menu {
-    position: absolute;
-    top: 20%;
-    bottom: 10%;
+/* Brawler Card Box */
+.brawler-card {
+    position: relative;
+    aspect-ratio: 1 / 1.15; /* Replicates mobile card dimensions */
+    background-color: #2c3e50;
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    box-shadow: 0px 6px 0px rgba(0,0,0,0.4), inset 0px -10px 20px rgba(0,0,0,0.6);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    width: 150px;
-}
-
-.left-menu { left: 20px; }
-.right-menu { right: 20px; }
-
-.menu-btn {
-    background: linear-gradient(#f1c40f, #f39c12);
-    border: 3px solid #fff;
-    border-radius: 10px;
-    color: #2c3e50;
-    padding: 12px;
-    font-size: 1rem;
-    font-weight: bold;
+    justify-content: flex-end;
+    transition: transform 0.15s ease-in-out;
     cursor: pointer;
-    text-shadow: 1px 1px 0px #fff;
-    box-shadow: 0px 5px 0px #b7791f;
-    transition: 0.1s;
 }
 
-.menu-btn:active {
-    transform: translateY(3px);
-    box-shadow: 0px 2px 0px #b7791f;
+/* Rarity-based Border Colors */
+.brawler-card.starting { border: 4px solid #3498db; }
+.brawler-card.rare { border: 4px solid #2ecc71; }
+.brawler-card.super-rare { border: 4px solid #3498db; }
+.brawler-card.epic { border: 4px solid #9b59b6; }
+.brawler-card.mythic { border: 4px solid #d35400; }
+.brawler-card.legendary { border: 4px solid #f1c40f; }
+
+/* Dim locked brawlers to look greyed out */
+.brawler-card.locked {
+    filter: grayscale(100%) brightness(70%);
+    border-color: #7f8c8d !important;
 }
 
-/* Center Stage (Shelly Showcase) */
-#center-stage {
-    position: absolute;
-    top: 20%;
-    left: 25%;
-    right: 25%;
-    bottom: 10%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.brawler-card:active {
+    transform: scale(0.97);
 }
 
-#brawler-showcase {
+/* Bottom Label Block (Name & Power level) */
+.brawler-card-bottom {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9) 60%);
+    padding: 12px 6px 6px 6px;
     text-align: center;
+    z-index: 2;
 }
 
-#active-brawler-img {
-    height: 250px;
-    filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.5));
-}
-
-#upgrade-btn {
-    margin-top: 10px;
-    padding: 8px 15px;
-    background: #2ecc71;
-    border: 2px solid white;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-}
-
-/* Modal/Popup Window */
-#modal {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-}
-
-#modal-content {
-    background: #34495e;
-    border: 4px solid #f1c40f;
-    border-radius: 15px;
-    width: 80%;
-    height: 80%;
-    padding: 20px;
-    position: relative;
-    overflow-y: auto;
-}
-
-#close-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 5px 10px;
+.brawler-name {
     font-size: 1.2rem;
-    cursor: pointer;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 2px 2px 0px #000;
+    text-transform: uppercase;
 }
 
-.hidden { display: none !important; }
+/* Power Level Badge at the bottom */
+.power-level-badge {
+    display: inline-block;
+    background: linear-gradient(#e74c3c, #c0392b);
+    border: 2px solid #ffffff;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    padding: 2px 8px;
+    margin-top: 4px;
+    text-shadow: 1px 1px 0px #000;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Ability Indicator Layout (Top Right Corner) */
+.ability-container {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 3;
+}
+
+/* Ability Badges (Gadget, Star Power, Gear, Hypercharge) */
+.ability-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: #ffffff;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.6);
+    text-shadow: 1px 1px 0px #000;
+}
+
+/* Exact matching colors from Brawl Stars UI */
+.ability-badge.gadget { background: #2ecc71; }       /* Green Gadget */
+.ability-badge.starpower { background: #f1c40f; }    /* Yellow Star Power */
+.ability-badge.gear { background: #e67e22; }         /* Orange Gear */
+.ability-badge.hypercharge { 
+    background: #9b59b6;                             /* Purple/Pink Hypercharge */
+    animation: hc-glow 1.5s infinite alternate; 
+}
+
+/* Hypercharge pulsing effect */
+@keyframes hc-glow {
+    from { box-shadow: 0 0 2px #9b59b6, 0 0 4px #9b59b6; }
+    to { box-shadow: 0 0 8px #d87093, 0 0 12px #d87093; }
+}
