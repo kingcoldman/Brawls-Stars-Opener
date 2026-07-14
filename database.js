@@ -2,7 +2,7 @@ const brawlersDatabase = {
   // --- STARTER ---
   "Shelly": { rarity: "starting", img: "assets/brawlers/shelly.png" },
 
-  // --- RARE (9 BRAWLERS) ---
+  // --- RARE ---
   "Nita": { rarity: "rare", img: "assets/brawlers/nita.png" },
   "Colt": { rarity: "rare", img: "assets/brawlers/colt.png" },
   "Bull": { rarity: "rare", img: "assets/brawlers/bull.png" },
@@ -12,7 +12,7 @@ const brawlersDatabase = {
   "Poco": { rarity: "rare", img: "assets/brawlers/poco.png" },
   "Rosa": { rarity: "rare", img: "assets/brawlers/rosa.png" },
 
-  // --- SUPER RARE (10 BRAWLERS) ---
+  // --- SUPER RARE ---
   "Jessie": { rarity: "super-rare", img: "assets/brawlers/jessie.png" },
   "Dynamike": { rarity: "super-rare", img: "assets/brawlers/dynamike.png" },
   "Tick": { rarity: "super-rare", img: "assets/brawlers/tick.png" },
@@ -24,7 +24,7 @@ const brawlersDatabase = {
   "Jacky": { rarity: "super-rare", img: "assets/brawlers/jacky.png" },
   "Gus": { rarity: "super-rare", img: "assets/brawlers/gus.png" },
 
-  // --- EPIC (32 BRAWLERS) ---
+  // --- EPIC ---
   "Bo": { rarity: "epic", img: "assets/brawlers/bo.png" },
   "Emz": { rarity: "epic", img: "assets/brawlers/emz.png" },
   "Stu": { rarity: "epic", img: "assets/brawlers/stu.png" },
@@ -58,7 +58,7 @@ const brawlersDatabase = {
   "Bolt": { rarity: "epic", img: "assets/brawlers/bolt.png" },
   "Pierce": { rarity: "epic", img: "assets/brawlers/pierce.png" },
 
-  // --- MYTHIC (40 BRAWLERS) ---
+  // --- MYTHIC ---
   "Mortis": { rarity: "mythic", img: "assets/brawlers/mortis.png" },
   "Tara": { rarity: "mythic", img: "assets/brawlers/tara.png" },
   "Gene": { rarity: "mythic", img: "assets/brawlers/gene.png" },
@@ -100,7 +100,7 @@ const brawlersDatabase = {
   "Damian": { rarity: "mythic", img: "assets/brawlers/damian.png" },
   "Wendy": { rarity: "mythic", img: "assets/brawlers/wendy.png" },
 
-  // --- LEGENDARY (16 BRAWLERS) ---
+  // --- LEGENDARY ---
   "Spike": { rarity: "legendary", img: "assets/brawlers/spike.png" },
   "Crow": { rarity: "legendary", img: "assets/brawlers/crow.png" },
   "Leon": { rarity: "legendary", img: "assets/brawlers/leon.png" },
@@ -118,6 +118,3 @@ const brawlersDatabase = {
   "Kaze": { rarity: "legendary", img: "assets/brawlers/kaze.png" },
   "Sirius": { rarity: "legendary", img: "assets/brawlers/sirius.png" }
 };
-
-// Freeze the database to prevent direct structural changes elsewhere in your code
-Object.freeze(brawlersDatabase);
