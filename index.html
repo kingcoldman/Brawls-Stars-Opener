@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brawl Stars Opener</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="top-bar">
+    <div class="stat"><span class="icon">🏆</span> <span id="trophies">0</span></div>
+    <div class="stat"><span class="icon">🪙</span> <span id="coins">0</span></div>
+    <div class="stat"><span class="icon">💎</span> <span id="gems">20</span></div>
+  </header>
+
+  <main class="game-container">
+    <div class="box-section">
+      <div id="box" class="brawl-box">
+        <div class="box-text">BRAWL BOX</div>
+      </div>
+      <button id="open-btn">Open Box (Free)</button>
+    </div>
+
+    <div id="drop-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="drop-title">You got!</h2>
+        <div id="drop-image" class="drop-icon">❓</div>
+        <p id="drop-name">Brawler Name</p>
+        <button id="claim-btn">Claim</button>
+      </div>
+    </div>
+
+    <section class="collection-section">
+      <h2>Your Brawlers (<span id="unlocked-count">0</span>/6)</h2>
+      <div id="brawler-grid" class="brawler-grid"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
