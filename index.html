@@ -3,20 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brawl Stars - Box Simulator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet" />
+  <title>Box Simulator - Brawl Stars Gifts & Chests Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Rubik:wght@700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg-gradient: radial-gradient(circle at center, #1b263b 0%, #0d1117 100%);
-      --brawl-yellow: #ffce00;
-      --brawl-blue: #0077ff;
-      --brawl-purple: #a800ff;
-      --brawl-red: #ff3344;
-      --rare-green: #2bf03b;
-      --super-rare-blue: #00bfff;
-      --epic-purple: #d100ff;
-      --mythic-red: #fe004a;
-      --legendary-yellow: #fff000;
+      --bs-yellow: #ffcc00;
+      --bs-yellow-dark: #cc9900;
+      --bs-blue: #0088ff;
+      --bs-blue-dark: #0055bb;
+      --bs-purple: #a800ff;
+      --bs-red: #ff2255;
+      
+      --rarity-rare: #2bf03b;
+      --rarity-super-rare: #00bfff;
+      --rarity-epic: #d100ff;
+      --rarity-mythic: #fe004a;
+      --rarity-legendary: #fff000;
+      --rarity-chromatic: #f3a800;
     }
 
     * {
@@ -28,7 +31,7 @@
 
     body {
       font-family: 'Lilita One', cursive, sans-serif;
-      background: var(--bg-gradient);
+      background: radial-gradient(circle at center, #2b1055 0%, #0f051d 100%);
       color: #fff;
       min-height: 100vh;
       display: flex;
@@ -37,169 +40,176 @@
       overflow-x: hidden;
     }
 
-    /* Header Bar */
+    /* Top Stats Bar */
     header {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1100px;
       padding: 15px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(0, 0, 0, 0.4);
-      border-bottom: 4px solid #000;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.6);
+      border-bottom: 5px solid #000;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+      z-index: 10;
+    }
+
+    .brand {
+      font-size: 1.8rem;
+      color: var(--bs-yellow);
+      text-shadow: 3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+      letter-spacing: 1px;
     }
 
     .currencies {
       display: flex;
-      gap: 15px;
+      gap: 12px;
     }
 
-    .currency-card {
+    .stat-badge {
       background: #111;
-      border: 3px solid #333;
+      border: 3px solid #000;
       border-radius: 12px;
       padding: 6px 14px;
       display: flex;
       align-items: center;
       gap: 8px;
       font-size: 1.2rem;
-      text-shadow: 2px 2px #000;
+      box-shadow: 0 4px 0 #000;
+      text-shadow: 2px 2px 0 #000;
     }
 
-    .icon-coin { color: var(--brawl-yellow); }
-    .icon-gem { color: #00ff88; }
-    .icon-box { color: var(--brawl-blue); }
-
-    /* Navigation */
+    /* Navigation Tabs */
     nav {
       display: flex;
-      gap: 10px;
-      margin: 20px 0;
+      gap: 15px;
+      margin: 25px 0;
     }
 
-    .nav-btn {
-      background: #333;
-      color: #fff;
-      border: 3px solid #000;
-      border-radius: 10px;
-      padding: 10px 24px;
+    .bs-btn {
+      background: var(--bs-yellow);
+      color: #000;
+      border: 4px solid #000;
+      border-radius: 14px;
+      padding: 12px 28px;
       font-family: inherit;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       cursor: pointer;
-      box-shadow: 0 4px 0 #000;
-      transition: transform 0.1s;
+      box-shadow: 0 6px 0 #000, inset 0 3px 0 rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      transform: skew(-5deg);
+      transition: transform 0.1s, background 0.1s;
     }
 
-    .nav-btn:active {
-      transform: translateY(4px);
+    .bs-btn:active {
+      transform: skew(-5deg) translateY(6px);
       box-shadow: 0 0 0 #000;
     }
 
-    .nav-btn.active {
-      background: var(--brawl-blue);
-      border-color: #0033aa;
+    .bs-btn.blue {
+      background: var(--bs-blue);
+      color: #fff;
     }
 
-    /* Content Panels */
+    .bs-btn.active {
+      background: #00ff66;
+      color: #000;
+    }
+
+    /* Panels Container */
     main {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1100px;
       flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      padding: 10px 20px 40px;
     }
 
     .panel {
       display: none;
       width: 100%;
-      flex-direction: column;
-      align-items: center;
     }
 
     .panel.active {
       display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    /* Box Selection Grid */
-    .box-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 25px;
+    /* Boxes / Shop Layout */
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+      width: 100%;
     }
 
     .box-card {
-      background: #1e293b;
+      background: linear-gradient(180deg, #2a1b4e 0%, #160c29 100%);
       border: 4px solid #000;
-      border-radius: 18px;
-      width: 260px;
+      border-radius: 20px;
       padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       box-shadow: 0 8px 0 #000;
-      text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    .box-icon {
-      width: 120px;
-      height: 120px;
+    .box-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .box-title {
+      font-size: 1.5rem;
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 10px;
+    }
+
+    .box-sprite {
+      width: 130px;
+      height: 130px;
       margin: 15px 0;
-      border-radius: 20px;
+      border-radius: 25px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 4rem;
+      font-size: 4.5rem;
       border: 4px solid #000;
-      box-shadow: inset 0 0 15px rgba(255,255,255,0.2), 0 6px 0 #000;
-      position: relative;
+      box-shadow: inset 0 0 20px rgba(255,255,255,0.3), 0 6px 0 #000;
     }
 
-    .brawl-box .box-icon { background: linear-gradient(135deg, #0088ff, #003399); }
-    .big-box .box-icon { background: linear-gradient(135deg, #a800ff, #5500aa); }
-    .mega-box .box-icon { background: linear-gradient(135deg, #ffcc00, #ff6600); }
+    .box-brawl .box-sprite { background: linear-gradient(135deg, #0099ff, #0033aa); }
+    .box-big .box-sprite { background: linear-gradient(135deg, #a800ff, #5500aa); }
+    .box-mega .box-sprite { background: linear-gradient(135deg, #ffcc00, #ff6600); }
+    .box-omega .box-sprite { background: linear-gradient(135deg, #ff0055, #aa0022); }
 
-    .open-btn {
-      background: var(--rare-green);
-      color: #000;
-      border: 3px solid #000;
-      border-radius: 10px;
-      padding: 10px 20px;
-      font-family: inherit;
-      font-size: 1.3rem;
-      cursor: pointer;
-      box-shadow: 0 5px 0 #000;
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    .open-btn:active {
-      transform: translateY(5px);
-      box-shadow: 0 0 0 #000;
-    }
-
-    /* Brawlers Inventory */
-    .brawlers-grid {
+    /* Brawler Grid */
+    .brawler-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 15px;
       width: 100%;
     }
 
     .brawler-card {
-      background: #1f2937;
-      border: 3px solid #000;
-      border-radius: 12px;
-      padding: 10px;
+      background: #1a162b;
+      border: 4px solid #000;
+      border-radius: 16px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 5px 0 #000;
+      box-shadow: 0 6px 0 #000;
       position: relative;
-      opacity: 0.4;
+      opacity: 0.35;
       filter: grayscale(1);
     }
 
@@ -208,46 +218,50 @@
       filter: grayscale(0);
     }
 
-    .brawler-avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
+    .brawler-portrait {
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
       border: 3px solid #000;
+      background: #222;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
+      font-size: 2.5rem;
       margin-bottom: 8px;
+      box-shadow: 0 4px 0 #000;
     }
 
     .brawler-name {
       font-size: 1.1rem;
-      text-shadow: 2px 2px #000;
-      margin-bottom: 4px;
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 6px;
     }
 
-    .rarity-badge {
+    .rarity-pill {
       font-size: 0.75rem;
-      padding: 2px 8px;
-      border-radius: 6px;
-      border: 1px solid #000;
+      padding: 3px 10px;
+      border-radius: 8px;
+      border: 2px solid #000;
       text-transform: uppercase;
+      font-weight: bold;
     }
 
-    .rare { background: var(--rare-green); color: #000; }
-    .super-rare { background: var(--super-rare-blue); color: #000; }
-    .epic { background: var(--epic-purple); color: #fff; }
-    .mythic { background: var(--mythic-red); color: #fff; }
-    .legendary { background: var(--legendary-yellow); color: #000; }
+    .rare { background: var(--rarity-rare); color: #000; }
+    .super-rare { background: var(--rarity-super-rare); color: #000; }
+    .epic { background: var(--rarity-epic); color: #fff; }
+    .mythic { background: var(--rarity-mythic); color: #fff; }
+    .legendary { background: var(--rarity-legendary); color: #000; }
+    .chromatic { background: var(--rarity-chromatic); color: #000; }
 
-    /* Box Opening Overlay */
-    #opening-overlay {
+    /* Interactive Box Opening Screen */
+    #opening-modal {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(5, 2, 15, 0.95);
       display: none;
       flex-direction: column;
       justify-content: center;
@@ -256,139 +270,135 @@
       cursor: pointer;
     }
 
-    #opening-box {
-      font-size: 8rem;
-      transition: transform 0.1s ease;
-      animation: pulse 1s infinite alternate;
+    .tap-counter {
+      position: absolute;
+      top: 10%;
+      font-size: 2rem;
+      color: var(--bs-yellow);
+      text-shadow: 3px 3px 0 #000;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.08); }
+    #stage-box {
+      font-size: 9rem;
+      filter: drop-shadow(0 15px 10px rgba(0,0,0,0.7));
+      animation: wobble 0.6s infinite alternate ease-in-out;
     }
 
-    .tap-hint {
-      margin-top: 20px;
-      font-size: 1.5rem;
-      color: var(--brawl-yellow);
-      text-shadow: 2px 2px #000;
-      animation: blink 0.8s infinite alternate;
+    @keyframes wobble {
+      0% { transform: scale(1) rotate(-3deg); }
+      100% { transform: scale(1.08) rotate(3deg); }
     }
 
-    @keyframes blink {
-      0% { opacity: 0.3; }
-      100% { opacity: 1; }
-    }
-
-    /* Reward Card Modal */
-    .reward-card {
-      background: #111827;
+    .reward-modal {
+      background: linear-gradient(180deg, #22143d 0%, #0d0618 100%);
       border: 5px solid #000;
-      border-radius: 20px;
-      padding: 30px;
+      border-radius: 24px;
+      padding: 35px 45px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 0 30px rgba(255, 206, 0, 0.4);
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 0 50px rgba(255, 204, 0, 0.5), 0 10px 0 #000;
+      animation: popBounce 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       text-align: center;
-      min-width: 280px;
+      min-width: 300px;
     }
 
-    @keyframes popIn {
-      0% { transform: scale(0.2); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    @keyframes popBounce {
+      0% { transform: scale(0.1); opacity: 0; }
+      70% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
     }
 
     .reward-icon {
-      font-size: 5rem;
-      margin-bottom: 10px;
+      font-size: 5.5rem;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 6px 0 #000);
     }
 
-    .reward-amount {
-      font-size: 2.5rem;
-      color: var(--brawl-yellow);
-      text-shadow: 3px 3px #000;
+    .reward-val {
+      font-size: 2.8rem;
+      color: var(--bs-yellow);
+      text-shadow: 3px 3px 0 #000;
     }
 
     .reward-title {
       font-size: 1.8rem;
-      margin-top: 5px;
-      text-shadow: 2px 2px #000;
+      text-shadow: 2px 2px 0 #000;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div style="font-size: 1.5rem; text-shadow: 2px 2px #000;">BOX SIMULATOR</div>
+    <div class="brand">BOX SIMULATOR</div>
     <div class="currencies">
-      <div class="currency-card"><span class="icon-coin">🪙</span> <span id="coin-count">0</span></div>
-      <div class="currency-card"><span class="icon-gem">💎</span> <span id="gem-count">0</span></div>
-      <div class="currency-card"><span class="icon-box">📦</span> <span id="box-count">0</span></div>
+      <div class="stat-badge"><span style="color:#ffcc00">🪙</span> <span id="cnt-coins">0</span></div>
+      <div class="stat-badge"><span style="color:#00ff88">💎</span> <span id="cnt-gems">0</span></div>
+      <div class="stat-badge"><span style="color:#00ccff">⚡</span> <span id="cnt-power">0</span></div>
     </div>
   </header>
 
   <nav>
-    <button class="nav-btn active" onclick="switchTab('boxes')">Boxes</button>
-    <button class="nav-btn" onclick="switchTab('brawlers')">Brawlers</button>
+    <button class="bs-btn active" onclick="showTab('shop')">Boxes</button>
+    <button class="bs-btn blue" onclick="showTab('brawlers')">Brawlers</button>
   </nav>
 
   <main>
-    <!-- Shop / Boxes Panel -->
-    <div id="boxes-panel" class="panel active">
-      <div class="box-grid">
-        <div class="box-card brawl-box">
-          <h2>Brawl Box</h2>
-          <div class="box-icon">📦</div>
-          <p>Standard drop chances</p>
-          <button class="open-btn" onclick="startBoxOpening('brawl')">FREE</button>
+    <!-- Box Shop -->
+    <div id="panel-shop" class="panel active">
+      <div class="shop-grid">
+        <div class="box-card box-brawl">
+          <div class="box-title">Brawl Box</div>
+          <div class="box-sprite">📦</div>
+          <button class="bs-btn" onclick="openBox('brawl')">FREE</button>
         </div>
 
-        <div class="box-card big-box">
-          <h2>Big Box</h2>
-          <div class="box-icon">🎁</div>
-          <p>3x rewards of a Brawl Box</p>
-          <button class="open-btn" onclick="startBoxOpening('big')">FREE</button>
+        <div class="box-card box-big">
+          <div class="box-title">Big Box</div>
+          <div class="box-sprite">🎁</div>
+          <button class="bs-btn" onclick="openBox('big')">FREE</button>
         </div>
 
-        <div class="box-card mega-box">
-          <h2>Mega Box</h2>
-          <div class="box-icon">🧰</div>
-          <p>10x rewards of a Brawl Box</p>
-          <button class="open-btn" onclick="startBoxOpening('mega')">FREE</button>
+        <div class="box-card box-mega">
+          <div class="box-title">Mega Box</div>
+          <div class="box-sprite">🧰</div>
+          <button class="bs-btn" onclick="openBox('mega')">FREE</button>
+        </div>
+
+        <div class="box-card box-omega">
+          <div class="box-title">Omega Box</div>
+          <div class="box-sprite">🏺</div>
+          <button class="bs-btn" onclick="openBox('omega')">FREE</button>
         </div>
       </div>
     </div>
 
-    <!-- Inventory Panel -->
-    <div id="brawlers-panel" class="panel">
-      <div id="brawlers-container" class="brawlers-grid"></div>
+    <!-- Collection / Brawlers -->
+    <div id="panel-brawlers" class="panel">
+      <div id="brawlers-list" class="brawler-grid"></div>
     </div>
   </main>
 
-  <!-- Box Opening Overlay -->
-  <div id="opening-overlay" onclick="handleTap()">
-    <div id="opening-stage">
-      <div id="opening-box">📦</div>
-      <div class="tap-hint">TAP TO OPEN!</div>
-    </div>
-    <div id="reward-stage" style="display: none;"></div>
+  <!-- Interactive Opening Modal -->
+  <div id="opening-modal" onclick="advanceOpening()">
+    <div id="tap-count" class="tap-counter">Items Remaining: 3</div>
+    <div id="stage-box">📦</div>
+    <div id="stage-reward" style="display: none;"></div>
   </div>
 
   <script>
-    // Audio Synth Context
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    // Audio Synthesizer
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx;
 
-    function playSound(freq, duration, type = 'sine') {
+    function playTone(freq, type, duration) {
       try {
-        if (!audioCtx) audioCtx = new AudioCtx();
+        if (!audioCtx) audioCtx = new AudioContext();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -397,8 +407,8 @@
       } catch (e) {}
     }
 
-    // Brawler Registry Data
-    const BRAWLERS = [
+    // Brawler Catalog
+    const CATALOG = [
       { id: 'shelly', name: 'Shelly', rarity: 'rare', icon: '🤠' },
       { id: 'nita', name: 'Nita', rarity: 'rare', icon: '🐻' },
       { id: 'colt', name: 'Colt', rarity: 'rare', icon: '🔫' },
@@ -406,9 +416,7 @@
       { id: 'el_primo', name: 'El Primo', rarity: 'super-rare', icon: '🥊' },
       { id: 'barley', name: 'Barley', rarity: 'super-rare', icon: '🍾' },
       { id: 'poco', name: 'Poco', rarity: 'super-rare', icon: '🎸' },
-      { id: 'rosa', name: 'Rosa', rarity: 'super-rare', icon: '🥊' },
       { id: 'rico', name: 'Rico', rarity: 'epic', icon: '🤖' },
-      { id: 'darryl', name: 'Darryl', rarity: 'epic', icon: '🛢️' },
       { id: 'piper', name: 'Piper', rarity: 'epic', icon: '☂️' },
       { id: 'pam', name: 'Pam', rarity: 'epic', icon: '🔧' },
       { id: 'mortis', name: 'Mortis', rarity: 'mythic', icon: '🦇' },
@@ -416,173 +424,200 @@
       { id: 'gene', name: 'Gene', rarity: 'mythic', icon: '🧞' },
       { id: 'spike', name: 'Spike', rarity: 'legendary', icon: '🌵' },
       { id: 'crow', name: 'Crow', rarity: 'legendary', icon: '🦅' },
-      { id: 'leon', name: 'Leon', rarity: 'legendary', icon: '🦎' }
+      { id: 'leon', name: 'Leon', rarity: 'legendary', icon: '🦎' },
+      { id: 'gale', name: 'Gale', rarity: 'chromatic', icon: '👴' },
+      { id: 'surge', name: 'Surge', rarity: 'chromatic', icon: '🤖' }
     ];
 
-    // State Management
-    let state = {
+    // Local Storage State
+    let userState = {
       coins: 0,
       gems: 0,
-      boxesOpened: 0,
-      unlockedBrawlers: ['shelly']
+      powerPoints: 0,
+      unlocked: ['shelly']
     };
 
-    function loadState() {
-      const saved = localStorage.getItem('bs_box_sim_save');
+    function loadData() {
+      const saved = localStorage.getItem('bs_box_sim_chests');
       if (saved) {
-        try { state = JSON.parse(saved); } catch(e){}
+        try { userState = JSON.parse(saved); } catch(e){}
       }
-      updateUI();
+      refreshUI();
     }
 
-    function saveState() {
-      localStorage.setItem('bs_box_sim_save', JSON.stringify(state));
-      updateUI();
+    function saveData() {
+      localStorage.setItem('bs_box_sim_chests', JSON.stringify(userState));
+      refreshUI();
     }
 
-    function updateUI() {
-      document.getElementById('coin-count').innerText = state.coins;
-      document.getElementById('gem-count').innerText = state.gems;
-      document.getElementById('box-count').innerText = state.boxesOpened;
-      renderBrawlers();
+    function refreshUI() {
+      document.getElementById('cnt-coins').innerText = userState.coins;
+      document.getElementById('cnt-gems').innerText = userState.gems;
+      document.getElementById('cnt-power').innerText = userState.powerPoints;
+      buildBrawlerGrid();
     }
 
-    // Tab Switching
-    function switchTab(tabName) {
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+    function showTab(tab) {
+      document.querySelectorAll('.bs-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
 
-      if (tabName === 'boxes') {
-        document.querySelectorAll('.nav-btn')[0].classList.add('active');
-        document.getElementById('boxes-panel').classList.add('active');
+      if (tab === 'shop') {
+        document.querySelectorAll('.bs-btn')[0].classList.add('active');
+        document.getElementById('panel-shop').classList.add('active');
       } else {
-        document.querySelectorAll('.nav-btn')[1].classList.add('active');
-        document.getElementById('brawlers-panel').classList.add('active');
+        document.querySelectorAll('.bs-btn')[1].classList.add('active');
+        document.getElementById('panel-brawlers').classList.add('active');
       }
     }
 
-    // Render Inventory
-    function renderBrawlers() {
-      const container = document.getElementById('brawlers-container');
+    function buildBrawlerGrid() {
+      const container = document.getElementById('brawlers-list');
       container.innerHTML = '';
 
-      BRAWLERS.forEach(brawler => {
-        const isUnlocked = state.unlockedBrawlers.includes(brawler.id);
+      CATALOG.forEach(brawler => {
+        const isUnlocked = userState.unlocked.includes(brawler.id);
         const card = document.createElement('div');
         card.className = `brawler-card ${isUnlocked ? 'unlocked' : ''}`;
         card.innerHTML = `
-          <div class="brawler-avatar">${brawler.icon}</div>
+          <div class="brawler-portrait">${brawler.icon}</div>
           <div class="brawler-name">${brawler.name}</div>
-          <div class="rarity-badge ${brawler.rarity}">${brawler.rarity.replace('-', ' ')}</div>
+          <div class="rarity-pill ${brawler.rarity}">${brawler.rarity.replace('-', ' ')}</div>
         `;
         container.appendChild(card);
       });
     }
 
-    // Box Opening Engine
-    let currentRewards = [];
-    let rewardIndex = 0;
+    // Chest Drop Generation Logic
+    let activeRewards = [];
+    let currentStep = 0;
 
-    function startBoxOpening(boxType) {
-      playSound(440, 0.1);
-      state.boxesOpened++;
-      currentRewards = generateRewards(boxType);
-      rewardIndex = 0;
-
-      const overlay = document.getElementById('opening-overlay');
-      const boxVisual = document.getElementById('opening-box');
+    function openBox(type) {
+      playTone(523, 'square', 0.15);
       
-      boxVisual.innerText = boxType === 'brawl' ? '📦' : boxType === 'big' ? '🎁' : '🧰';
-      document.getElementById('opening-stage').style.display = 'flex';
-      document.getElementById('reward-stage').style.display = 'none';
-      overlay.style.display = 'flex';
+      const count = type === 'brawl' ? 2 : type === 'big' ? 3 : type === 'mega' ? 5 : 8;
+      activeRewards = createDrops(type, count);
+      currentStep = 0;
+
+      const modal = document.getElementById('opening-modal');
+      const boxSprite = document.getElementById('stage-box');
+      
+      boxSprite.innerText = type === 'brawl' ? '📦' : type === 'big' ? '🎁' : type === 'mega' ? '🧰' : '🏺';
+      document.getElementById('tap-count').innerText = `Items Remaining: ${activeRewards.length}`;
+      document.getElementById('stage-box').style.display = 'block';
+      document.getElementById('stage-reward').style.display = 'none';
+      modal.style.display = 'flex';
     }
 
-    function generateRewards(type) {
-      const multiplier = type === 'brawl' ? 1 : type === 'big' ? 3 : 10;
-      const rewards = [];
+    function createDrops(type, targetCount) {
+      const mult = type === 'brawl' ? 1 : type === 'big' ? 3 : type === 'mega' ? 10 : 25;
+      const drops = [];
 
-      // 1. Coins
-      const coins = Math.floor((Math.random() * 20 + 15) * multiplier);
-      rewards.push({ type: 'coin', amount: coins, title: 'Coins', icon: '🪙' });
+      // Coins
+      drops.push({
+        type: 'coin',
+        amount: Math.floor((Math.random() * 25 + 20) * mult),
+        title: 'Coins',
+        icon: '🪙'
+      });
 
-      // 2. Gems Chance
-      if (Math.random() < 0.25) {
-        const gems = Math.floor((Math.random() * 5 + 3) * (type === 'mega' ? 2 : 1));
-        rewards.push({ type: 'gem', amount: gems, title: 'Gems', icon: '💎' });
+      // Power Points
+      drops.push({
+        type: 'power',
+        amount: Math.floor((Math.random() * 15 + 10) * mult),
+        title: 'Power Points',
+        icon: '⚡'
+      });
+
+      // Bonus Gems
+      if (Math.random() < 0.4) {
+        drops.push({
+          type: 'gem',
+          amount: Math.floor((Math.random() * 5 + 3) * (type === 'mega' || type === 'omega' ? 2 : 1)),
+          title: 'Gems',
+          icon: '💎'
+        });
       }
 
-      // 3. Brawler Chance
-      const rolledBrawler = rollBrawler();
-      if (rolledBrawler) {
-        rewards.push({ type: 'brawler', brawler: rolledBrawler, title: rolledBrawler.name, icon: rolledBrawler.icon });
+      // New Brawler Check
+      const newBrawler = rollBrawler();
+      if (newBrawler) {
+        drops.push({
+          type: 'brawler',
+          brawler: newBrawler,
+          title: newBrawler.name,
+          icon: newBrawler.icon
+        });
       }
 
-      return rewards;
+      return drops;
     }
 
     function rollBrawler() {
-      const locked = BRAWLERS.filter(b => !state.unlockedBrawlers.includes(b.id));
+      const locked = CATALOG.filter(b => !userState.unlocked.includes(b.id));
       if (locked.length === 0) return null;
 
-      const rand = Math.random();
-      let targetRarity = null;
+      const roll = Math.random();
+      let selectedRarity = null;
 
-      if (rand < 0.02) targetRarity = 'legendary';
-      else if (rand < 0.06) targetRarity = 'mythic';
-      else if (rand < 0.15) targetRarity = 'epic';
-      else if (rand < 0.35) targetRarity = 'super-rare';
-      else if (rand < 0.65) targetRarity = 'rare';
+      if (roll < 0.03) selectedRarity = 'chromatic';
+      else if (roll < 0.06) selectedRarity = 'legendary';
+      else if (roll < 0.12) selectedRarity = 'mythic';
+      else if (roll < 0.25) selectedRarity = 'epic';
+      else if (roll < 0.50) selectedRarity = 'super-rare';
+      else if (roll < 0.80) selectedRarity = 'rare';
 
-      if (!targetRarity) return null;
+      if (!selectedRarity) return null;
 
-      const available = locked.filter(b => b.rarity === targetRarity);
-      if (available.length > 0) {
-        return available[Math.floor(Math.random() * available.length)];
-      }
-      return null;
+      const candidates = locked.filter(b => b.rarity === selectedRarity);
+      return candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : null;
     }
 
-    function handleTap() {
-      const stage = document.getElementById('opening-stage');
-      const rewardStage = document.getElementById('reward-stage');
+    function advanceOpening() {
+      const boxStage = document.getElementById('stage-box');
+      const rewardStage = document.getElementById('stage-reward');
+      const tapCounter = document.getElementById('tap-count');
 
-      if (stage.style.display !== 'none') {
-        stage.style.display = 'none';
+      if (boxStage.style.display !== 'none') {
+        boxStage.style.display = 'none';
         rewardStage.style.display = 'flex';
-        showNextReward();
+        renderCurrentReward();
       } else {
-        rewardIndex++;
-        if (rewardIndex < currentRewards.length) {
-          showNextReward();
+        currentStep++;
+        if (currentStep < activeRewards.length) {
+          renderCurrentReward();
         } else {
-          document.getElementById('opening-overlay').style.display = 'none';
-          saveState();
+          document.getElementById('opening-modal').style.display = 'none';
+          saveData();
         }
       }
+
+      const remaining = activeRewards.length - currentStep;
+      tapCounter.innerText = remaining > 0 ? `Items Remaining: ${remaining}` : '';
     }
 
-    function showNextReward() {
-      playSound(600 + (rewardIndex * 100), 0.15);
-      const reward = currentRewards[rewardIndex];
-      const rewardStage = document.getElementById('reward-stage');
+    function renderCurrentReward() {
+      const drop = activeRewards[currentStep];
+      const rewardStage = document.getElementById('stage-reward');
 
-      if (reward.type === 'coin') state.coins += reward.amount;
-      if (reward.type === 'gem') state.gems += reward.amount;
-      if (reward.type === 'brawler') state.unlockedBrawlers.push(reward.brawler.id);
+      if (drop.type === 'coin') userState.coins += drop.amount;
+      if (drop.type === 'gem') userState.gems += drop.amount;
+      if (drop.type === 'power') userState.powerPoints += drop.amount;
+      if (drop.type === 'brawler') userState.unlocked.push(drop.brawler.id);
+
+      playTone(drop.type === 'brawler' ? 880 : 600, 'triangle', 0.2);
 
       rewardStage.innerHTML = `
-        <div class="reward-card">
-          <div class="reward-icon">${reward.icon}</div>
-          <div class="reward-amount">${reward.amount ? '+' + reward.amount : ''}</div>
-          <div class="reward-title">${reward.title}</div>
-          ${reward.brawler ? `<div class="rarity-badge ${reward.brawler.rarity}" style="margin-top:10px;">${reward.brawler.rarity}</div>` : ''}
+        <div class="reward-modal">
+          <div class="reward-icon">${drop.icon}</div>
+          <div class="reward-val">${drop.amount ? '+' + drop.amount : ''}</div>
+          <div class="reward-title">${drop.title}</div>
+          ${drop.brawler ? `<div class="rarity-pill ${drop.brawler.rarity}" style="margin-top:12px;">${drop.brawler.rarity}</div>` : ''}
         </div>
       `;
     }
 
-    // Initialize App
-    loadState();
+    // Boot
+    loadData();
   </script>
 </body>
 </html>
